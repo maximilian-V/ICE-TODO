@@ -6,6 +6,8 @@ import {
     DndContext,
     DragEndEvent,
     DragOverEvent,
+    DragStartEvent,
+    DragOverlay,
     PointerSensor,
     closestCorners,
     useSensor,
@@ -17,6 +19,7 @@ import {
 import { Task, COLUMNS } from '@/app/types/kanban';
 import { KanbanColumn } from './KanbanColumn';
 import { TaskFormDialog } from './TaskFormDialog';
+import { TaskCard } from './TaskCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from './AuthProvider';
@@ -28,6 +31,7 @@ export function KanbanBoard() {
     const [newTaskColumnId, setNewTaskColumnId] = useState<string>('todo');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [activeTask, setActiveTask] = useState<Task | null>(null);
 
     const { user, signOut } = useAuth();
     const taskService = new TaskService();
@@ -68,8 +72,11 @@ export function KanbanBoard() {
         loadTasks();
     }, [user]);
 
-    const handleDragStart = () => {
-        // Handle drag start if needed
+    const handleDragStart = (event: DragStartEvent) => {
+        const { active } = event;
+        const activeId = active.id as string;
+        const task = tasks.find((t) => t.id === activeId);
+        setActiveTask(task || null);
     };
 
     const handleDragOver = (event: DragOverEvent) => {
@@ -136,6 +143,9 @@ export function KanbanBoard() {
                 return tasks;
             });
         }
+
+        // Clear the active task
+        setActiveTask(null);
     };
 
     const handleAddTask = (columnId: string) => {
@@ -325,6 +335,16 @@ export function KanbanBoard() {
                         />
                     ))}
                 </div>
+                <DragOverlay>
+                    {activeTask ? (
+                        <TaskCard
+                            task={activeTask}
+                            onEdit={() => { }}
+                            onDelete={() => { }}
+                            onToggleSubtask={() => { }}
+                        />
+                    ) : null}
+                </DragOverlay>
             </DndContext>
 
             <TaskFormDialog

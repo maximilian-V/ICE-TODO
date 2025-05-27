@@ -29,7 +29,8 @@ export function TaskCard({ task, onEdit, onDelete, onToggleSubtask }: TaskCardPr
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
-        opacity: isDragging ? 0.5 : 1,
+        opacity: isDragging ? 0.8 : 1,
+        zIndex: isDragging ? 1000 : 'auto',
     };
 
     const getIceScoreColor = (score: number) => {
@@ -46,7 +47,8 @@ export function TaskCard({ task, onEdit, onDelete, onToggleSubtask }: TaskCardPr
         <Card
             ref={setNodeRef}
             style={style}
-            className="mb-3 cursor-move hover:shadow-lg transition-shadow"
+            className={`mb-3 cursor-move hover:shadow-lg transition-shadow ${isDragging ? 'shadow-2xl scale-105 rotate-2' : ''
+                }`}
         >
             <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">

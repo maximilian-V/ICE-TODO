@@ -2,9 +2,24 @@
 
 import { KanbanColumn } from '../components/KanbanColumn';
 import { TaskFormDialog } from '../components/TaskFormDialog';
+import { TaskCard } from '../components/TaskCard';
 import { Navigation } from '../components/Navigation';
 import { Task, COLUMNS } from '@/app/types/kanban';
 import { useState } from 'react';
+import {
+    DndContext,
+    DragEndEvent,
+    DragOverEvent,
+    DragStartEvent,
+    DragOverlay,
+    PointerSensor,
+    closestCorners,
+    useSensor,
+    useSensors,
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+} from '@dnd-kit/sortable';
 
 export default function DemoPage() {
     const [tasks, setTasks] = useState<Task[]>([
@@ -41,9 +56,72 @@ export default function DemoPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [newTaskColumnId, setNewTaskColumnId] = useState<string>('todo');
+    const [activeTask, setActiveTask] = useState<Task | null>(null);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        })
+    );
 
     const getTasksByColumn = (columnId: string) => {
         return tasks.filter((task) => task.columnId === columnId);
+    };
+
+    const handleDragStart = (event: DragStartEvent) => {
+        const { active } = event;
+        const activeId = active.id as string;
+        const task = tasks.find((t) => t.id === activeId);
+        setActiveTask(task || null);
+    };
+
+    const handleDragOver = (event: DragOverEvent) => {
+        const { active, over } = event;
+        if (!over) return;
+
+        const activeId = active.id as string;
+        const overId = over.id as string;
+
+        const activeTask = tasks.find((t) => t.id === activeId);
+        if (!activeTask) return;
+
+        // Check if we're over a column
+        const overColumn = COLUMNS.find((col) => col.id === overId);
+        if (overColumn && activeTask.columnId !== overColumn.id) {
+            setTasks((tasks) =>
+                tasks.map((task) =>
+                    task.id === activeId
+                        ? { ...task, columnId: overColumn.id }
+                        : task
+                )
+            );
+        }
+    };
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+        if (!over) return;
+
+        const activeId = active.id as string;
+        const overId = over.id as string;
+
+        // Handle reordering within the same column
+        if (activeId !== overId) {
+            setTasks((tasks) => {
+                const activeIndex = tasks.findIndex((t) => t.id === activeId);
+                const overIndex = tasks.findIndex((t) => t.id === overId);
+
+                if (activeIndex !== -1 && overIndex !== -1) {
+                    return arrayMove(tasks, activeIndex, overIndex);
+                }
+                return tasks;
+            });
+        }
+
+        // Clear the active task
+        setActiveTask(null);
     };
 
     const handleAddTask = (columnId: string) => {
@@ -116,19 +194,37 @@ export default function DemoPage() {
                     </p>
                 </header>
                 <main className="h-[calc(100vh-200px)]">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
-                        {COLUMNS.map((column) => (
-                            <KanbanColumn
-                                key={column.id}
-                                column={column}
-                                tasks={getTasksByColumn(column.id)}
-                                onAddTask={handleAddTask}
-                                onEditTask={handleEditTask}
-                                onDeleteTask={handleDeleteTask}
-                                onToggleSubtask={handleToggleSubtask}
-                            />
-                        ))}
-                    </div>
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCorners}
+                        onDragStart={handleDragStart}
+                        onDragOver={handleDragOver}
+                        onDragEnd={handleDragEnd}
+                    >
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
+                            {COLUMNS.map((column) => (
+                                <KanbanColumn
+                                    key={column.id}
+                                    column={column}
+                                    tasks={getTasksByColumn(column.id)}
+                                    onAddTask={handleAddTask}
+                                    onEditTask={handleEditTask}
+                                    onDeleteTask={handleDeleteTask}
+                                    onToggleSubtask={handleToggleSubtask}
+                                />
+                            ))}
+                        </div>
+                        <DragOverlay>
+                            {activeTask ? (
+                                <TaskCard
+                                    task={activeTask}
+                                    onEdit={() => { }}
+                                    onDelete={() => { }}
+                                    onToggleSubtask={() => { }}
+                                />
+                            ) : null}
+                        </DragOverlay>
+                    </DndContext>
 
                     <TaskFormDialog
                         open={isDialogOpen}
