@@ -242,7 +242,7 @@ export function LandingPage() {
                             <div className="relative">
                                 <div className="absolute -inset-1.5 bg-gradient-to-r from-[#7dd3fc]/30 to-[#e0f2fe]/30 rounded-xl blur-md"></div>
                                 <Image
-                                    src="/app-preview.png"
+                                    src="/board.png"
                                     alt="ICE Todo App Preview"
                                     width={700}
                                     height={400}
