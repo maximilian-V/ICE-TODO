@@ -1,552 +1,561 @@
 'use client'
 
 import Link from 'next/link'
-import { Zap, Shield, CheckCircle, TrendingUp, Users, Target, BarChart3, Brain, Calendar, MessageSquare, FileText, Search, Sparkles } from 'lucide-react'
-import AuroraText from '@/components/ui/aurora-text'
-import MagicCard from '@/components/ui/magic-card'
-import RippleButton from '@/components/ui/ripple-button'
-
+import {
+    Zap,
+    CheckCircle,
+    TrendingUp,
+    Target,
+    BarChart3,
+    Move,
+    Users,
+    ArrowRight,
+    Star,
+    Clock,
+    Sparkles,
+    ChevronRight
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import Image from 'next/image'
+import { BlurFade } from '@/components/magicui/blur-fade'
+import { motion } from 'framer-motion'
+import { cn } from '@/lib/utils'
+
+// Elegant floating shape component for the hero section
+function FloatingShape({
+    className,
+    delay = 0,
+    width = 400,
+    height = 100,
+    rotate = 0,
+    gradient = "from-[#bae6fd]",
+}: {
+    className?: string;
+    delay?: number;
+    width?: number;
+    height?: number;
+    rotate?: number;
+    gradient?: string;
+}) {
+    return (
+        <motion.div
+            initial={{
+                opacity: 0,
+                y: -50,
+                rotate: rotate - 15,
+            }}
+            animate={{
+                opacity: 1,
+                y: 0,
+                rotate: rotate,
+            }}
+            transition={{
+                duration: 2.4,
+                delay,
+                ease: [0.23, 0.86, 0.39, 0.96],
+                opacity: { duration: 1.2 },
+            }}
+            className={cn("absolute", className)}
+        >
+            <motion.div
+                animate={{
+                    y: [0, 15, 0],
+                }}
+                transition={{
+                    duration: 12,
+                    repeat: Number.POSITIVE_INFINITY,
+                    ease: "easeInOut",
+                }}
+                style={{
+                    width,
+                    height,
+                }}
+                className="relative"
+            >
+                <div
+                    className={cn(
+                        "absolute inset-0 rounded-full",
+                        "bg-gradient-to-r to-transparent",
+                        gradient,
+                        "backdrop-blur-[2px] border border-[#e0f2fe]",
+                        "shadow-[0_8px_32px_0_rgba(186,230,253,0.2)]",
+                        "after:absolute after:inset-0 after:rounded-full",
+                        "after:bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.3),transparent_70%)]"
+                    )}
+                />
+            </motion.div>
+        </motion.div>
+    );
+}
 
 export function LandingPage() {
+    const fadeUpVariants = {
+        hidden: { opacity: 0, y: 30 },
+        visible: (i: number) => ({
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 1,
+                delay: 0.2 + i * 0.15,
+                ease: [0.25, 0.4, 0.25, 1],
+            },
+        }),
+    };
+
     return (
-        <div className="min-h-screen bg-white text-gray-900">
-            {/* Header */}
-            <header className="border-b border-gray-200 bg-white/95 backdrop-blur-sm sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-8">
-                            <Link href="/" className="text-2xl font-bold text-gray-900">
-                                <AuroraText>ice</AuroraText>
-                            </Link>
-                            <nav className="hidden md:flex items-center gap-6">
-                                <Link href="#platform" className="text-gray-600 hover:text-gray-900 transition-colors">Platform</Link>
-                                <Link href="#methodology" className="text-gray-600 hover:text-gray-900 transition-colors">ICE Methodology</Link>
-                                <Link href="#how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">How it works</Link>
-                                <Link href="#templates" className="text-gray-600 hover:text-gray-900 transition-colors">Templates</Link>
-                                <Link href="/demo" className="text-gray-600 hover:text-gray-900 transition-colors">Demo</Link>
-                                <Link href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">Pricing</Link>
-                            </nav>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <Link href="/auth/login" className="text-gray-600 hover:text-gray-900 transition-colors">Log in</Link>
-                            <Link href="/auth/signup">
-                                <Button className="bg-blue-600 hover:bg-blue-700 text-white">Get Started</Button>
-                            </Link>
-                        </div>
-                    </div>
-                </div>
-            </header>
+        <div className="min-h-screen bg-gradient-to-b from-[#e6f7fa] via-[#f4fbfd] to-[#eaf6fb] text-[#1e3a5f] relative overflow-hidden">
+            {/* Enhanced Hero Section */}
+            <section className="relative py-20 md:py-32 px-6 min-h-[90vh] flex items-center">
+                <div className="absolute inset-0 overflow-hidden">
+                    {/* Decorative floating shapes */}
+                    <FloatingShape
+                        delay={0.3}
+                        width={600}
+                        height={140}
+                        rotate={12}
+                        gradient="from-[#7dd3fc]/30"
+                        className="left-[-10%] md:left-[-5%] top-[15%] md:top-[20%]"
+                    />
 
-            {/* Announcement Banner */}
-            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border-b border-blue-100">
-                <div className="max-w-7xl mx-auto px-6 py-3">
-                    <div className="text-center">
-                        <span className="text-blue-800 font-medium">
-                            🚀 We just launched the most advanced ICE scoring system for priority management
-                        </span>
-                    </div>
-                </div>
-            </div>
+                    <FloatingShape
+                        delay={0.5}
+                        width={500}
+                        height={120}
+                        rotate={-15}
+                        gradient="from-[#e0f2fe]/40"
+                        className="right-[-5%] md:right-[0%] top-[70%] md:top-[75%]"
+                    />
 
-            {/* Hero Section */}
-            <section className="relative py-20 px-6 bg-white">
-                <div className="max-w-7xl mx-auto">
+                    <FloatingShape
+                        delay={0.4}
+                        width={300}
+                        height={80}
+                        rotate={-8}
+                        gradient="from-[#bae6fd]/30"
+                        className="left-[5%] md:left-[10%] bottom-[5%] md:bottom-[10%]"
+                    />
+
+                    <FloatingShape
+                        delay={0.6}
+                        width={200}
+                        height={60}
+                        rotate={20}
+                        gradient="from-[#0c4a6e]/10"
+                        className="right-[15%] md:right-[20%] top-[10%] md:top-[15%]"
+                    />
+
+                    <FloatingShape
+                        delay={0.7}
+                        width={150}
+                        height={40}
+                        rotate={-25}
+                        gradient="from-[#7dd3fc]/20"
+                        className="left-[20%] md:left-[25%] top-[5%] md:top-[10%]"
+                    />
+                </div>
+
+                <div className="max-w-7xl mx-auto relative z-10">
                     <div className="text-center max-w-4xl mx-auto">
-                        <h1 className="text-6xl md:text-7xl font-black mb-8 leading-tight">
-                            Complete
-                            <br />
-                            <span className="bg-gradient-to-r from-blue-600 via-cyan-600 to-purple-600 bg-clip-text text-transparent">
-                                Priority Management
-                            </span>
-                            <br />
-                            Automation
-                        </h1>
-                        <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
-                            Automate the chaos in your workflow with the most advanced ICE scoring system, no complex setup required.
-                        </p>
-                        <Link href="/demo">
-                            <RippleButton className="px-8 py-4 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white">
-                                Get a Demo
-                            </RippleButton>
-                        </Link>
+                        <motion.div
+                            custom={0}
+                            variants={fadeUpVariants}
+                            initial="hidden"
+                            animate="visible"
+                            className="flex justify-center"
+                        >
+                            <Badge variant="outline" className="animate-appear gap-2 mb-6 bg-[#e0f2fe] text-[#0c4a6e] border-[#bae6fd] px-4 py-1.5">
+                                <span className="text-[#0c4a6e]">Introducing ICE Framework</span>
+                                <Link href="/demo" className="flex items-center gap-1 text-[#0c4a6e] hover:text-[#0a3a5a]">
+                                    See it in action
+                                    <ChevronRight className="h-3 w-3" />
+                                </Link>
+                            </Badge>
+                        </motion.div>
+
+                        <motion.div
+                            custom={1}
+                            variants={fadeUpVariants}
+                            initial="hidden"
+                            animate="visible"
+                        >
+                            <h1 className="text-5xl md:text-7xl font-bold mb-4 tracking-tight">
+                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#0c4a6e] via-[#0a3a5a] to-[#0c4a6e]">
+                                    Smart Task Prioritization
+                                </span>
+                            </h1>
+                        </motion.div>
+
+                        <motion.div
+                            custom={2}
+                            variants={fadeUpVariants}
+                            initial="hidden"
+                            animate="visible"
+                        >
+                            <h2 className="text-3xl md:text-4xl font-bold mb-8 leading-tight">
+                                with the
+                                <span className="bg-gradient-to-r from-[#0c4a6e] via-[#0a3a5a] to-[#0c4a6e] bg-clip-text text-transparent">
+                                    {" "}ICE Framework
+                                </span>
+                            </h2>
+                        </motion.div>
+
+                        <motion.div
+                            custom={3}
+                            variants={fadeUpVariants}
+                            initial="hidden"
+                            animate="visible"
+                        >
+                            <p className="text-md md:text-xl font-medium text-[#1e3a5f] max-w-2xl mx-auto mb-12">
+                                Organize your tasks using Impact, Confidence, and Ease scoring.
+                                Drag & drop kanban board with intelligent prioritization.
+                            </p>
+                        </motion.div>
+
+                        <motion.div
+                            custom={4}
+                            variants={fadeUpVariants}
+                            initial="hidden"
+                            animate="visible"
+                            className="flex justify-center gap-4"
+                        >
+                            <Button size="lg" asChild className="bg-[#0c4a6e] hover:bg-[#0a3a5a] text-white">
+                                <Link href="/demo" className="flex items-center gap-2">
+                                    Try Demo
+                                </Link>
+                            </Button>
+                            <Button variant="outline" size="lg" asChild className="border-[#bae6fd] text-[#0c4a6e] hover:bg-[#e0f2fe]">
+                                <Link href="/auth/signup" className="flex items-center gap-2">
+                                    Sign Up Free
+                                </Link>
+                            </Button>
+                        </motion.div>
+
+                        {/* App Preview with animation */}
+                        <motion.div
+                            custom={5}
+                            variants={fadeUpVariants}
+                            initial="hidden"
+                            animate="visible"
+                            className="relative pt-16 flex justify-center"
+                        >
+                            <div className="relative">
+                                <div className="absolute -inset-1.5 bg-gradient-to-r from-[#7dd3fc]/30 to-[#e0f2fe]/30 rounded-xl blur-md"></div>
+                                <Image
+                                    src="/app-preview.png"
+                                    alt="ICE Todo App Preview"
+                                    width={700}
+                                    height={400}
+                                    priority
+                                    className="rounded-xl shadow-lg bg-[#e0f2fe] border border-[#bae6fd] relative z-10"
+                                />
+
+                                {/* Floating ICE indicators */}
+                                <motion.div
+                                    className="absolute -top-6 -right-6 bg-[#0c4a6e] text-white rounded-full px-4 py-2 font-bold shadow-lg z-20"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 2.2, duration: 0.8 }}
+                                >
+                                    Impact
+                                </motion.div>
+                                <motion.div
+                                    className="absolute -bottom-6 -right-6 bg-[#7dd3fc] text-[#0c4a6e] rounded-full px-4 py-2 font-bold shadow-lg z-20"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 2.4, duration: 0.8 }}
+                                >
+                                    Confidence
+                                </motion.div>
+                                <motion.div
+                                    className="absolute -bottom-6 -left-6 bg-[#e0f2fe] text-[#0c4a6e] rounded-full px-4 py-2 font-bold shadow-lg z-20"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 2.6, duration: 0.8 }}
+                                >
+                                    Ease
+                                </motion.div>
+                            </div>
+                        </motion.div>
                     </div>
                 </div>
             </section>
 
-            {/* Value Proposition */}
-            <section className="py-20 px-6 bg-gray-50">
-                <div className="max-w-7xl mx-auto">
+            {/* Features Section */}
+            <section className="py-20 px-6 bg-gradient-to-br from-[#e0f2fe]/60 to-[#f4fbfd]/80 relative">
+                <div className="max-w-7xl mx-auto relative z-10">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl font-bold mb-6 text-gray-900">
-                            An AI-powered system of action for productivity
-                        </h2>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-                        <div className="flex items-center gap-3">
-                            <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                            <span className="text-gray-700">Create an army of personalized ICE scorecards that work for you 24/7</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-2 h-2 bg-cyan-600 rounded-full"></div>
-                            <span className="text-gray-700">Leverage ICE&apos;s built-in AI deep task analysis to uncover priority-critical insights</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-                            <span className="text-gray-700">Action priority insights with targeted workflows across teams and projects</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
-                            <span className="text-gray-700">ICE agents plug seamlessly into your CRM and favorite productivity tools</span>
-                        </div>
-                    </div>
-
-                    {/* Integration Logos */}
-                    <div className="flex flex-wrap justify-center items-center gap-8 opacity-60">
-                        <div className="flex items-center gap-2 text-gray-500 font-semibold">
-                            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                                <span className="text-white text-xs font-bold">SF</span>
-                            </div>
-                            Salesforce
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-500 font-semibold">
-                            <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
-                                <span className="text-white text-xs font-bold">O</span>
-                            </div>
-                            Outlook
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-500 font-semibold">
-                            <div className="w-8 h-8 bg-orange-500 rounded flex items-center justify-center">
-                                <span className="text-white text-xs font-bold">H</span>
-                            </div>
-                            HubSpot
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-500 font-semibold">
-                            <div className="w-8 h-8 bg-red-500 rounded flex items-center justify-center">
-                                <span className="text-white text-xs font-bold">G</span>
-                            </div>
-                            Gmail
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-500 font-semibold">
-                            <div className="w-8 h-8 bg-green-600 rounded flex items-center justify-center">
-                                <span className="text-white text-xs font-bold">P</span>
-                            </div>
-                            Pipedrive
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-500 font-semibold">
-                            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center">
-                                <span className="text-white text-xs font-bold">GC</span>
-                            </div>
-                            Google Calendar
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-500 font-semibold">
-                            <div className="w-8 h-8 bg-blue-700 rounded flex items-center justify-center">
-                                <span className="text-white text-xs font-bold">Li</span>
-                            </div>
-                            LinkedIn
-                        </div>
-                    </div>
-
-                    <div className="text-center mt-12">
-                        <p className="text-gray-600 font-medium">Trusted by the best strategic teams</p>
-                        <div className="flex flex-wrap justify-center items-center gap-8 mt-6 opacity-40">
-                            <span className="text-gray-500 font-bold">MICROSOFT</span>
-                            <span className="text-gray-500 font-bold">GOOGLE</span>
-                            <span className="text-gray-500 font-bold">ORACLE</span>
-                            <span className="text-gray-500 font-bold">NVIDIA</span>
-                            <span className="text-gray-500 font-bold">SALESFORCE</span>
-                            <span className="text-gray-500 font-bold">ADOBE</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ICE Agents Section */}
-            <section className="py-20 px-6 bg-white">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-5xl font-bold mb-6 text-gray-900">
-                            ICE Agents that Make Humans the Stars of the Show
-                        </h2>
-                    </div>
-
-                    <div className="text-center mb-16">
-                        <h3 className="text-3xl font-bold mb-12 text-gray-900">
-                            Collaborate with ICE agents to 10x productivity performance
-                        </h3>
-                    </div>
-
-                    <div className="grid lg:grid-cols-2 gap-12 mb-20">
-                        {/* Example 1 */}
-                        <div className="space-y-6">
-                            <div className="text-lg text-gray-700">
-                                <strong>A product manager...</strong>
-                            </div>
-                            <p className="text-gray-600">
-                                Researches the highest impact features in their backlog, then identifies and scores decision criteria
+                        <BlurFade delay={0.5} inView>
+                            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#1e3a5f]">
+                                Everything you need for smart task management
+                            </h2>
+                        </BlurFade>
+                        <BlurFade delay={0.6} inView>
+                            <p className="text-xl text-[#0c4a6e] max-w-3xl mx-auto">
+                                Built with the ICE methodology to help you focus on what matters most
                             </p>
-                            <MagicCard className="p-6 bg-white border-gray-200" gradientColor="#2563eb">
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                            <Target className="w-5 h-5 text-blue-600" />
-                                        </div>
-                                        <div>
-                                            <h4 className="font-semibold text-gray-900">Feature Analytics Dashboard</h4>
-                                            <p className="text-sm text-gray-600">Sarah Davis, Product Lead</p>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-gray-600">Goal: Increase user engagement</span>
-                                        </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-gray-600">Team budget: $500K</span>
-                                            <span className="text-blue-600 font-medium">ICE Score: 672</span>
-                                        </div>
-                                        <div className="text-sm text-gray-600">Open initiatives: 3</div>
-                                    </div>
-                                </div>
-                            </MagicCard>
-                        </div>
-
-                        {/* Example 2 */}
-                        <div className="space-y-6">
-                            <div className="text-lg text-gray-700">
-                                <strong>A marketing team...</strong>
-                            </div>
-                            <p className="text-gray-600">
-                                Runs hyper-focused campaigns targeting high-impact channels that have recently shown strong performance
-                            </p>
-                            <MagicCard className="p-6 bg-white border-gray-200" gradientColor="#0891b2">
-                                <div className="space-y-4">
-                                    <div className="text-sm text-gray-600">To: Social Media Campaign</div>
-                                    <div className="font-semibold text-gray-900">Subject: Q4 LinkedIn Strategy</div>
-                                    <div className="text-gray-700">Dear Marketing Team,</div>
-                                    <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded">
-                                        Based on ICE analysis, LinkedIn campaigns show 3x higher engagement rates...
-                                    </div>
-                                </div>
-                            </MagicCard>
-                        </div>
-
-                        {/* Example 3 */}
-                        <div className="space-y-6">
-                            <div className="text-lg text-gray-700">
-                                <strong>A startup founder...</strong>
-                            </div>
-                            <p className="text-gray-600">
-                                Qualifies feature requests and writes 1:1 development priorities referencing similar successful products
-                            </p>
-                            <MagicCard className="p-6 bg-white border-gray-200" gradientColor="#7c3aed">
-                                <div className="space-y-4">
-                                    <div className="font-semibold text-gray-900">Feature Qualification</div>
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                                            <span className="text-gray-900 font-medium">TechStartup Inc.</span>
-                                        </div>
-                                        <div className="text-sm text-gray-600">Strong ICE Match</div>
-                                        <div className="text-sm text-gray-600">Similar to Slack&apos;s notification system</div>
-                                        <div className="text-sm text-gray-600">Key decision maker: Maria Johnson (CTO)</div>
-                                        <div className="text-sm text-blue-600">3 touchpoints referencing Discord case study</div>
-                                    </div>
-                                </div>
-                            </MagicCard>
-                        </div>
-
-                        {/* Example 4 */}
-                        <div className="space-y-6">
-                            <div className="text-lg text-gray-700">
-                                <strong>An operations team...</strong>
-                            </div>
-                            <p className="text-gray-600">
-                                Guides strategic decisions by dynamically analyzing external market, competitor and efficiency research
-                            </p>
-                            <MagicCard className="p-6 bg-white border-gray-200" gradientColor="#059669">
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="font-semibold text-gray-900">Market Analysis</div>
-                                        <div className="flex items-center gap-1">
-                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                            <span className="text-xs text-gray-600">Live</span>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-2 text-sm text-gray-600">
-                                        <div>Remote work trends will impact office space needs by 25% in Q3.</div>
-                                        <div>Recent competitor moves detected: 2 new automation tools</div>
-                                        <div>Market forecast suggests 15% increase in demand for productivity software.</div>
-                                        <div>New AI-powered tools showing 40% higher adoption rates among teams.</div>
-                                    </div>
-                                </div>
-                            </MagicCard>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Templates Section */}
-            <section id="templates" className="py-20 px-6 bg-gray-50">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl font-bold mb-6 text-gray-900">
-                            Get started with our ICE templates, or build your own
-                        </h2>
-                        <Button variant="outline" className="border-gray-300 text-gray-700 hover:bg-gray-50">
-                            Try our starter templates
-                        </Button>
-                    </div>
-
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {[
-                            { icon: Search, title: "Task Finder", desc: "Filtered lists, lookalikes, dynamic scoring" },
-                            { icon: Target, title: "Priority Ranker", desc: "Use any data and research insights" },
-                            { icon: Users, title: "Team Triager", desc: "Auto-qualify, enrich, sequence and track" },
-                            { icon: Zap, title: "Impact Scorer", desc: "Leverage unique data, omni-channel analysis" },
-                            { icon: Calendar, title: "Meeting Prepper", desc: "Research attendees, brainstorm personalized questions" },
-                            { icon: TrendingUp, title: "Signal Tracker", desc: "Always stay in the know with alerts for changes" },
-                            { icon: MessageSquare, title: "Stakeholder Mapper", desc: "Identify and engage decision makers with relevant deliverables" },
-                            { icon: FileText, title: "Handoff Assistant", desc: "Ensure team members always have up-to-date insights" },
-                            { icon: BarChart3, title: "Project Planner", desc: "Research, identify and action new opportunities" },
-                            { icon: Shield, title: "Risk Assessor", desc: "Generate SWOT analysis, risk matrices, value pyramids" },
-                            { icon: Brain, title: "Competitor Researcher", desc: "Research your competitors, their strategies, and their teams" },
-                            { icon: Sparkles, title: "Custom Agent", desc: "If you can dream it, you can build it 🧙🪄" }
-                        ].map((template, index) => (
-                            <MagicCard key={index} className="p-6 bg-white border-gray-200 h-48 flex flex-col" gradientColor="#3b82f6">
-                                <div className="flex-1">
-                                    <template.icon className="w-8 h-8 text-blue-600 mb-4" />
-                                    <h3 className="font-semibold text-gray-900 mb-2">{template.title}</h3>
-                                    <p className="text-sm text-gray-600">{template.desc}</p>
-                                </div>
-                            </MagicCard>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* How It Works */}
-            <section id="how-it-works" className="py-20 px-6 bg-white">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-5xl font-bold mb-6 text-gray-900">How ICE Works</h2>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Build AI ICE agents in 15 minutes or less, no technical skills required
-                        </p>
-                    </div>
-
-                    <div className="grid lg:grid-cols-3 gap-12">
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <span className="text-2xl font-bold text-blue-600">1</span>
-                            </div>
-                            <h3 className="text-xl font-bold mb-4 text-gray-900">Create a knowledge base</h3>
-                            <p className="text-gray-600">
-                                Train an ICE agent that understands your priorities, constraints and success metrics
-                            </p>
-                        </div>
-
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-cyan-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <span className="text-2xl font-bold text-cyan-600">2</span>
-                            </div>
-                            <h3 className="text-xl font-bold mb-4 text-gray-900">Build an agent</h3>
-                            <p className="text-gray-600">
-                                Deploy agents using a super simple chat-based interface
-                            </p>
-                        </div>
-
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <span className="text-2xl font-bold text-purple-600">3</span>
-                            </div>
-                            <h3 className="text-xl font-bold mb-4 text-gray-900">Test & deploy</h3>
-                            <p className="text-gray-600">
-                                Agents run autonomously based on events in your CRM and other productivity tools
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Testimonials */}
-            <section className="py-20 px-6 bg-gray-50">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-5xl font-bold mb-6 text-gray-900">Testimonials</h2>
-                        <p className="text-xl text-gray-600">Hear What Our Community Has to Say</p>
+                        </BlurFade>
                     </div>
 
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[
                             {
-                                quote: "This is the most powerful productivity tool I've used in the last decade. It allows us to achieve world-class alignment with our strategic priorities.",
-                                author: "Sarah Johnson",
-                                role: "Chief Executive Officer at TechCorp",
-                                company: "TC"
+                                icon: <BarChart3 className="w-6 h-6 text-[#0c4a6e]" />,
+                                title: "ICE Scoring",
+                                description: "Rate tasks by Impact (1-10), Confidence (1-10), and Ease (1-10). Automatic calculation of ICE scores for smart prioritization.",
+                                color: "from-[#bae6fd] to-[#7dd3fc]"
                             },
                             {
-                                quote: "Your tool gave me some critical insights and saves me a lot of time and effort to find a blueprint for what my team should be working on.",
-                                author: "Mike Chen",
-                                role: "Product Manager at InnovateLabs",
-                                company: "IL"
+                                icon: <Move className="w-6 h-6 text-[#0c4a6e]" />,
+                                title: "Drag & Drop Kanban",
+                                description: "Intuitive kanban board with three columns: To Do, In Progress, and Done. Drag tasks to reorder and move between columns.",
+                                color: "from-[#e0f2fe] to-[#7dd3fc]"
                             },
                             {
-                                quote: "The thing I need to do the most is be strategic and show that I know a lot about my team's priorities. It's much harder without ICE.",
-                                author: "Lisa Rodriguez",
-                                role: "Founder & CEO at StartupX",
-                                company: "SX"
+                                icon: <CheckCircle className="w-6 h-6 text-[#0c4a6e]" />,
+                                title: "Subtasks",
+                                description: "Break down complex tasks into manageable subtasks. Track progress with completion percentages and visual indicators.",
+                                color: "from-[#bae6fd] to-[#e0f2fe]"
                             },
                             {
-                                quote: "ICE is worth its weight in gold. The power of this tool is for our teams to be sitting around brainstorming and have instant priority clarity.",
-                                author: "David Kim",
-                                role: "Senior Director at MegaCorp",
-                                company: "MC"
+                                icon: <Target className="w-6 h-6 text-[#0c4a6e]" />,
+                                title: "Smart Ordering",
+                                description: "Tasks are automatically ordered by ICE score within each column. Focus on high-impact, high-confidence, easy-to-complete tasks first.",
+                                color: "from-[#e0f2fe] to-[#bae6fd]"
                             },
                             {
-                                quote: "ICE is a game-changer for my team. We now know more about our priorities than ever before and have more time to focus on execution.",
-                                author: "Emma Thompson",
-                                role: "Head of Operations at ScaleUp",
-                                company: "SU"
+                                icon: <Users className="w-6 h-6 text-[#0c4a6e]" />,
+                                title: "Personal Workspace",
+                                description: "Secure user authentication with personal task management. Your tasks are private and accessible only to you.",
+                                color: "from-[#7dd3fc] to-[#e0f2fe]"
                             },
                             {
-                                quote: "You have what 99% of the market don't have, most is vaporware, not real intelligence. We're finding 100% improvement in clarity.",
-                                author: "James Wilson",
-                                role: "Director of Strategy at Enterprise Inc",
-                                company: "EI"
+                                icon: <Clock className="w-6 h-6 text-[#0c4a6e]" />,
+                                title: "Real-time Updates",
+                                description: "Changes are saved instantly to the cloud. Your task order and progress persist across sessions.",
+                                color: "from-[#e0f2fe] to-[#bae6fd]"
                             }
-                        ].map((testimonial, index) => (
-                            <MagicCard key={index} className="p-6 bg-white border-gray-200" gradientColor="#3b82f6">
-                                <div className="space-y-4">
-                                    <p className="text-gray-700 italic">&quot;{testimonial.quote}&quot;</p>
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                            <span className="text-blue-600 font-bold text-sm">{testimonial.company}</span>
-                                        </div>
-                                        <div>
-                                            <div className="font-semibold text-gray-900">{testimonial.author}</div>
-                                            <div className="text-sm text-gray-600">{testimonial.role}</div>
-                                        </div>
+                        ].map((feature, index) => (
+                            <BlurFade key={index} delay={0.7 + index * 0.1} inView>
+                                <div
+                                    className="group relative overflow-hidden rounded-xl border border-[#bae6fd] bg-white/80 p-8 hover:shadow-lg transition-all duration-300"
+                                >
+                                    <div className="pointer-events-none absolute top-0 left-1/2 -mt-2 -ml-20 h-full w-full [mask-image:linear-gradient(white,transparent)]">
+                                        <div className="from-[#e0f2fe]/40 to-transparent absolute inset-0 bg-gradient-to-r [mask-image:radial-gradient(farthest-side_at_top,white,transparent)] opacity-100"></div>
                                     </div>
+
+                                    <div className="w-12 h-12 bg-[#e0f2fe] rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                        {feature.icon}
+                                    </div>
+
+                                    <h3 className="text-xl font-bold mb-4 text-[#1e3a5f]">{feature.title}</h3>
+
+                                    <p className="text-[#1e3a5f]">
+                                        {feature.description}
+                                    </p>
                                 </div>
-                            </MagicCard>
+                            </BlurFade>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* FAQ */}
-            <section className="py-20 px-6 bg-white">
-                <div className="max-w-4xl mx-auto">
+            {/* ICE Methodology Section */}
+            <section className="py-20 px-6 bg-gradient-to-b from-[#f4fbfd] to-[#e0f2fe] relative">
+                <div className="max-w-7xl mx-auto relative z-10">
                     <div className="text-center mb-16">
-                        <h2 className="text-5xl font-bold mb-6 text-gray-900">FAQs</h2>
-                        <p className="text-xl text-gray-600">Frequently Asked Questions</p>
+                        <BlurFade delay={1.3} inView>
+                            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#1e3a5f]">
+                                The ICE Framework Explained
+                            </h2>
+                        </BlurFade>
+                        <BlurFade delay={1.4} inView>
+                            <p className="text-xl text-[#0c4a6e] max-w-3xl mx-auto">
+                                A proven methodology for prioritizing tasks and features
+                            </p>
+                        </BlurFade>
                     </div>
 
-                    <div className="space-y-8">
+                    <div className="grid lg:grid-cols-3 gap-12">
                         {[
                             {
-                                question: "Where does ICE get its information from?",
-                                answer: "ICE analyzes your existing data, team inputs, market research, and historical performance to generate accurate Impact, Confidence, and Ease scores."
+                                icon: <TrendingUp className="w-10 h-10 text-white" />,
+                                title: "Impact",
+                                description: "How much will this task move the needle? Rate from 1-10 based on the potential positive outcome and importance to your goals.",
+                                color: "from-[#7dd3fc] to-[#bae6fd]"
                             },
                             {
-                                question: "How is my data protected?",
-                                answer: "We use enterprise-grade security with SOC 2 Type II compliance, end-to-end encryption, and strict data privacy controls to protect your information."
+                                icon: <Star className="w-10 h-10 text-white" />,
+                                title: "Confidence",
+                                description: "How sure are you that this task will achieve its intended impact? Rate your confidence level from 1-10.",
+                                color: "from-[#bae6fd] to-[#e0f2fe]"
                             },
                             {
-                                question: "Does ICE offer plans for teams?",
-                                answer: "Yes, we offer flexible team plans with collaborative features, shared workspaces, and admin controls for organizations of all sizes."
-                            },
-                            {
-                                question: "Does ICE integrate with other productivity platforms?",
-                                answer: "ICE integrates seamlessly with popular tools like Slack, Asana, Jira, Notion, and many other productivity and project management platforms."
-                            },
-                            {
-                                question: "Can I use ICE to prioritize personal tasks?",
-                                answer: "Absolutely! ICE works for both professional and personal task prioritization, helping you focus on what matters most in all areas of life."
-                            },
-                            {
-                                question: "Something else is missing or isn't working?",
-                                answer: "Our support team is here to help! Contact us through the chat widget or email support@ice.com for assistance with any issues."
+                                icon: <Zap className="w-10 h-10 text-white" />,
+                                title: "Ease",
+                                description: "How easy is this task to implement? Consider time, resources, and complexity. Rate from 1-10 (10 being very easy).",
+                                color: "from-[#e0f2fe] to-[#7dd3fc]"
                             }
-                        ].map((faq, index) => (
-                            <div key={index} className="border-b border-gray-200 pb-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-3">{faq.question}</h3>
-                                <p className="text-gray-600">{faq.answer}</p>
-                            </div>
+                        ].map((item, index) => (
+                            <BlurFade key={index} delay={1.5 + index * 0.1} inView>
+                                <div className="text-center group">
+                                    <div className={`w-20 h-20 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                                        {item.icon}
+                                    </div>
+                                    <h3 className="text-2xl font-bold mb-4 text-[#1e3a5f]">{item.title}</h3>
+                                    <p className="text-[#1e3a5f] text-lg">
+                                        {item.description}
+                                    </p>
+                                </div>
+                            </BlurFade>
                         ))}
+                    </div>
+
+                    <div className="mt-16 text-center">
+                        <BlurFade delay={1.8} inView>
+                            <div className="bg-white/80 rounded-2xl p-8 max-w-2xl mx-auto border border-[#bae6fd]">
+                                <h4 className="text-xl font-bold mb-4 text-[#1e3a5f]">ICE Score Calculation</h4>
+                                <p className="text-lg text-[#0c4a6e] mb-4">
+                                    <span className="font-mono bg-[#e0f2fe] px-3 py-1 rounded">
+                                        ICE Score = Impact × Confidence × Ease
+                                    </span>
+                                </p>
+                                <p className="text-[#1e3a5f]">
+                                    Higher scores indicate tasks that should be prioritized first.
+                                    Focus on tasks with high impact, high confidence, and high ease.
+                                </p>
+                            </div>
+                        </BlurFade>
                     </div>
                 </div>
             </section>
 
-            {/* Final CTA */}
-            <section className="py-20 px-6 bg-gray-50">
-                <div className="max-w-4xl mx-auto text-center">
-                    <h2 className="text-4xl font-bold mb-6 text-gray-900">
-                        Get real results, not another tool
-                    </h2>
-                    <Link href="/auth/signup">
-                        <RippleButton className="px-8 py-4 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white mb-8">
-                            Request a Custom Agent
-                        </RippleButton>
-                    </Link>
-                    <div className="bg-white rounded-2xl p-8 shadow-lg">
-                        <div className="text-gray-600 mb-4">ICE Dashboard Preview</div>
-                        <div className="bg-gray-100 rounded-lg h-64 flex items-center justify-center">
-                            <div className="text-gray-500">Interactive Dashboard Coming Soon</div>
+            {/* Demo Preview Section */}
+            <section className="py-20 px-6 bg-gradient-to-br from-[#e0f2fe]/60 to-[#f4fbfd]/80 relative">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <BlurFade delay={2.1} inView>
+                            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#1e3a5f]">
+                                See ICE Todo in Action
+                            </h2>
+                        </BlurFade>
+                        <BlurFade delay={2.2} inView>
+                            <p className="text-xl text-[#0c4a6e] max-w-3xl mx-auto">
+                                Try our interactive demo to experience the power of ICE-based task prioritization
+                            </p>
+                        </BlurFade>
+                    </div>
+
+                    <BlurFade delay={2.3} inView>
+                        <div className="bg-white/80 rounded-2xl p-8 shadow-lg max-w-4xl mx-auto border border-[#bae6fd]">
+                            <div className="bg-gradient-to-br from-[#e0f2fe]/40 to-[#f4fbfd]/60 rounded-lg h-96 flex flex-col items-center justify-center relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#bae6fd]/20 to-[#7dd3fc]/10"></div>
+                                <div className="relative z-10 text-center">
+                                    <div className="w-16 h-16 bg-[#e0f2fe] rounded-full flex items-center justify-center mx-auto mb-6">
+                                        <Sparkles className="w-8 h-8 text-[#0c4a6e]" />
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-[#1e3a5f] mb-4">Interactive Kanban Board</h3>
+                                    <p className="text-[#1e3a5f] mb-8 max-w-md">
+                                        Drag and drop tasks, see ICE scores in action, and experience
+                                        smart task prioritization firsthand.
+                                    </p>
+                                    <Button size="lg" asChild className="bg-[#0c4a6e] hover:bg-[#0a3a5a] text-white">
+                                        <Link href="/demo" className="flex items-center gap-2">
+                                            Launch Demo
+                                            <ArrowRight className="w-4 h-4 ml-2" />
+                                        </Link>
+                                    </Button>
+                                </div>
+                            </div>
                         </div>
+                    </BlurFade>
+                </div>
+            </section>
+
+            {/* CTA Section */}
+            <section className="py-20 px-6 bg-gradient-to-b from-[#e6f7fa] to-[#f4fbfd] relative">
+                <div className="max-w-4xl mx-auto text-center relative z-10">
+                    <BlurFade delay={2.5} inView>
+                        <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#1e3a5f]">
+                            Ready to prioritize like a pro?
+                        </h2>
+                    </BlurFade>
+                    <BlurFade delay={2.6} inView>
+                        <p className="text-xl text-[#0c4a6e] mb-12">
+                            Join thousands of users who have transformed their productivity with ICE Todo
+                        </p>
+                    </BlurFade>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Button size="lg" asChild className="bg-[#0c4a6e] hover:bg-[#0a3a5a] text-white">
+                            <Link href="/auth/signup" className="flex items-center gap-2">
+                                Start Free Today
+                            </Link>
+                        </Button>
+                        <Button variant="outline" size="lg" asChild className="border-[#bae6fd] text-[#0c4a6e] hover:bg-[#e0f2fe]">
+                            <Link href="/demo" className="flex items-center gap-2">
+                                Try Demo First
+                            </Link>
+                        </Button>
                     </div>
                 </div>
             </section>
 
             {/* Footer */}
-            <footer className="border-t border-gray-200 py-16 px-6 bg-white">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid md:grid-cols-4 gap-8 mb-12">
-                        <div className="md:col-span-2">
-                            <h3 className="text-2xl font-bold mb-4 text-gray-900">
-                                <AuroraText>ice</AuroraText>
-                            </h3>
-                            <p className="text-gray-600 mb-6 max-w-md">
-                                548 Market St, PMB 39241<br />
-                                San Francisco, CA 94104
-                            </p>
-                            <div className="flex items-center gap-2 mb-6">
-                                <div className="w-6 h-6 bg-green-600 rounded flex items-center justify-center">
-                                    <CheckCircle className="w-4 h-4 text-white" />
+            <footer className="border-t border-[#bae6fd] py-16 px-6 bg-gradient-to-b from-[#e0f2fe]/60 to-[#f4fbfd]/80 relative">
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="grid md:grid-cols-3 gap-8 mb-12">
+                        <div>
+                            <BlurFade delay={2.9} inView>
+                                <h3 className="text-2xl font-bold mb-4 text-[#1e3a5f]">
+                                    <span className="bg-gradient-to-r from-[#7dd3fc] via-[#bae6fd] to-[#e0f2fe] bg-clip-text text-transparent">
+                                        ICE Todo
+                                    </span>
+                                </h3>
+                            </BlurFade>
+                            <BlurFade delay={3.0} inView>
+                                <p className="text-[#1e3a5f] mb-6">
+                                    Smart task prioritization using the proven ICE framework.
+                                    Focus on what matters most.
+                                </p>
+                            </BlurFade>
+                        </div>
+
+                        <div>
+                            <BlurFade delay={3.1} inView>
+                                <h4 className="font-semibold mb-4 text-[#1e3a5f]">Product</h4>
+                            </BlurFade>
+                            <BlurFade delay={3.2} inView>
+                                <div className="space-y-2">
+                                    <Link href="/demo" className="block text-[#0c4a6e] hover:text-[#0a3a5a] transition-colors">Demo</Link>
+                                    <Link href="/auth/signup" className="block text-[#0c4a6e] hover:text-[#0a3a5a] transition-colors">Sign Up</Link>
+                                    <Link href="/auth/login" className="block text-[#0c4a6e] hover:text-[#0a3a5a] transition-colors">Log In</Link>
                                 </div>
-                                <span className="text-sm text-gray-600">ICE is SOC 2 Type II compliant</span>
-                            </div>
+                            </BlurFade>
                         </div>
 
                         <div>
-                            <h4 className="font-semibold mb-4 text-gray-900">Platform</h4>
-                            <div className="space-y-2">
-                                <Link href="#methodology" className="block text-gray-600 hover:text-gray-900 transition-colors">ICE Methodology</Link>
-                                <Link href="#how-it-works" className="block text-gray-600 hover:text-gray-900 transition-colors">How it works</Link>
-                                <Link href="#templates" className="block text-gray-600 hover:text-gray-900 transition-colors">Templates</Link>
-                                <Link href="/demo" className="block text-gray-600 hover:text-gray-900 transition-colors">Demo</Link>
-                                <Link href="#pricing" className="block text-gray-600 hover:text-gray-900 transition-colors">Pricing</Link>
-                                <Link href="/auth/login" className="block text-gray-600 hover:text-gray-900 transition-colors">Log in</Link>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 className="font-semibold mb-4 text-gray-900">Company</h4>
-                            <div className="space-y-2">
-                                <Link href="/about" className="block text-gray-600 hover:text-gray-900 transition-colors">About</Link>
-                                <Link href="/contact" className="block text-gray-600 hover:text-gray-900 transition-colors">Contact</Link>
-                                <Link href="/privacy" className="block text-gray-600 hover:text-gray-900 transition-colors">Terms and conditions</Link>
-                                <Link href="/privacy" className="block text-gray-600 hover:text-gray-900 transition-colors">Privacy Policy</Link>
-                            </div>
+                            <BlurFade delay={3.3} inView>
+                                <h4 className="font-semibold mb-4 text-[#1e3a5f]">Company</h4>
+                            </BlurFade>
+                            <BlurFade delay={3.4} inView>
+                                <div className="space-y-2">
+                                    <Link href="/about" className="block text-[#0c4a6e] hover:text-[#0a3a5a] transition-colors">About</Link>
+                                    <Link href="/contact" className="block text-[#0c4a6e] hover:text-[#0a3a5a] transition-colors">Contact</Link>
+                                    <Link href="/privacy" className="block text-[#0c4a6e] hover:text-[#0a3a5a] transition-colors">Privacy Policy</Link>
+                                </div>
+                            </BlurFade>
                         </div>
                     </div>
 
-                    <div className="border-t border-gray-200 pt-8 text-center text-gray-600">
-                        <p>Copyright © 2024 ice - AI-Powered Priority Management for Teams</p>
-                    </div>
+                    <BlurFade delay={3.5} inView>
+                        <div className="border-t border-[#bae6fd] pt-8 text-center text-[#0c4a6e]">
+                            <p>© {new Date().getFullYear()} ICE Todo - Smart Task Prioritization Made Simple</p>
+                        </div>
+                    </BlurFade>
                 </div>
             </footer>
         </div>
     )
-} 
+}
+
+export default LandingPage 
