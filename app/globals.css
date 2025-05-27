@@ -127,6 +127,38 @@
     @apply pointer-events-none;
     z-index: 9999;
   }
+  
+  /* Custom scrollbar styles for horizontal scroll */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+  }
+  
+  /* Smooth scrolling behavior */
+  .scrollbar-hide {
+    scroll-behavior: smooth;
+  }
+  
+  /* Scroll shadow indicators */
+  .scroll-container {
+    background: 
+      /* Shadow covers */
+      linear-gradient(90deg, white 30%, rgba(255,255,255,0)),
+      linear-gradient(90deg, rgba(255,255,255,0), white 70%),
+      
+      /* Shadows */ 
+      radial-gradient(farthest-side at 0% 50%, rgba(0,0,0,.2), rgba(0,0,0,0)),
+      radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,.2), rgba(0,0,0,0));
+    background-repeat: no-repeat;
+    background-color: white;
+    background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+    background-position: 0 0, 100%, 0 0, 100%;
+    background-attachment: local, local, scroll, scroll;
+  }
 }
 
 /* Magic UI Animations */

@@ -254,18 +254,25 @@ export default function DemoPage() {
                         onDragOver={handleDragOver}
                         onDragEnd={handleDragEnd}
                     >
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
-                            {DEFAULT_COLUMNS.map((column) => (
-                                <KanbanColumn
-                                    key={column.id}
-                                    column={column}
-                                    tasks={getTasksByColumn(column.id)}
-                                    onAddTask={handleAddTask}
-                                    onEditTask={handleEditTask}
-                                    onDeleteTask={handleDeleteTask}
-                                    onToggleSubtask={handleToggleSubtask}
-                                />
-                            ))}
+                        <div className="relative">
+                            {/* Gradient overlays for scroll indication */}
+                            <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-50 via-gray-50/80 to-transparent z-10 pointer-events-none" />
+                            <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-gray-50 via-gray-50/80 to-transparent z-10 pointer-events-none" />
+
+                            <div className="flex gap-6 h-full overflow-x-auto pb-4 scrollbar-hide">
+                                {DEFAULT_COLUMNS.map((column) => (
+                                    <div key={column.id} className="flex-shrink-0 w-80">
+                                        <KanbanColumn
+                                            column={column}
+                                            tasks={getTasksByColumn(column.id)}
+                                            onAddTask={handleAddTask}
+                                            onEditTask={handleEditTask}
+                                            onDeleteTask={handleDeleteTask}
+                                            onToggleSubtask={handleToggleSubtask}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                         <DragOverlay className="drag-overlay">
                             {activeTask ? (

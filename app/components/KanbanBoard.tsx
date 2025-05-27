@@ -22,8 +22,10 @@ import { TaskFormDialog } from './TaskFormDialog';
 import { TaskCard } from './TaskCard';
 import { DeleteTaskDialog } from './DeleteTaskDialog';
 import { RenameColumnDialog } from './RenameColumnDialog';
+import { AddColumnDialog } from './AddColumnDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 import { useAuth } from './AuthProvider';
 
 export function KanbanBoard() {
@@ -39,6 +41,7 @@ export function KanbanBoard() {
     const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
     const [renameDialogOpen, setRenameDialogOpen] = useState(false);
     const [columnToRename, setColumnToRename] = useState<Column | null>(null);
+    const [addColumnDialogOpen, setAddColumnDialogOpen] = useState(false);
 
     const { user, signOut } = useAuth();
     const taskService = new TaskService();
@@ -316,6 +319,35 @@ export function KanbanBoard() {
         }
     };
 
+    const handleAddColumn = () => {
+        setAddColumnDialogOpen(true);
+    };
+
+    const confirmAddColumn = async (title: string) => {
+        if (!user) return;
+
+        try {
+            // Generate a unique column ID
+            const columnId = `custom_${Date.now()}`;
+            const newOrder = columns.length;
+
+            const newColumn: Omit<Column, 'isCustom'> = {
+                id: columnId,
+                title,
+                order: newOrder,
+                color: '#6b7280'
+            };
+
+            const createdColumn = await columnService.createColumn(newColumn, user.id);
+            setColumns((columns) => [...columns, createdColumn]);
+            console.log('Column added:', createdColumn.id, 'with title:', title);
+        } catch (error) {
+            console.error('Error adding column:', error);
+            setError('Failed to add column');
+            throw error; // Re-throw to let the dialog handle the error
+        }
+    };
+
     const handleToggleSubtask = async (taskId: string, subtaskId: string) => {
         if (!user) return;
 
@@ -471,19 +503,42 @@ export function KanbanBoard() {
                 onDragOver={handleDragOver}
                 onDragEnd={handleDragEnd}
             >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
-                    {columns.map((column) => (
-                        <KanbanColumn
-                            key={column.id}
-                            column={column}
-                            tasks={getTasksByColumn(column.id)}
-                            onAddTask={handleAddTask}
-                            onEditTask={handleEditTask}
-                            onDeleteTask={handleDeleteTask}
-                            onToggleSubtask={handleToggleSubtask}
-                            onRenameColumn={handleRenameColumn}
-                        />
-                    ))}
+                <div className="relative">
+                    {/* Gradient overlays for scroll indication */}
+                    <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-50 via-gray-50/80 to-transparent z-10 pointer-events-none" />
+                    <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-gray-50 via-gray-50/80 to-transparent z-10 pointer-events-none" />
+
+                    <div className="flex gap-6 h-full overflow-x-auto pb-4 scrollbar-hide">
+                        {columns.map((column) => (
+                            <div key={column.id} className="flex-shrink-0 w-80">
+                                <KanbanColumn
+                                    column={column}
+                                    tasks={getTasksByColumn(column.id)}
+                                    onAddTask={handleAddTask}
+                                    onEditTask={handleEditTask}
+                                    onDeleteTask={handleDeleteTask}
+                                    onToggleSubtask={handleToggleSubtask}
+                                    onRenameColumn={handleRenameColumn}
+                                />
+                            </div>
+                        ))}
+
+                        {/* Add Column Button */}
+                        <div className="flex-shrink-0 w-80">
+                            <Card className="h-fit">
+                                <CardContent className="p-6">
+                                    <Button
+                                        variant="outline"
+                                        className="w-full h-20 border-dashed border-2 hover:border-solid hover:bg-gray-50"
+                                        onClick={handleAddColumn}
+                                    >
+                                        <Plus className="h-6 w-6 mr-2" />
+                                        Add Column
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
                 </div>
                 <DragOverlay className="drag-overlay">
                     {activeTask ? (
@@ -517,6 +572,12 @@ export function KanbanBoard() {
                 onOpenChange={setRenameDialogOpen}
                 column={columnToRename}
                 onConfirm={confirmRenameColumn}
+            />
+
+            <AddColumnDialog
+                open={addColumnDialogOpen}
+                onOpenChange={setAddColumnDialogOpen}
+                onConfirm={confirmAddColumn}
             />
         </>
     );
