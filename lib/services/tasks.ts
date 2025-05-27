@@ -68,6 +68,7 @@ export class TaskService {
             .from('tasks')
             .select('*')
             .eq('user_id', currentUserId)
+            .order('column_id', { ascending: true })
             .order('order_index', { ascending: true })
 
         console.log('Tasks query result:', { tasks, tasksError })
@@ -97,6 +98,11 @@ export class TaskService {
         }) || []
 
         console.log('Returning', result.length, 'tasks')
+        console.log('Tasks by column:', result.reduce((acc, task) => {
+            acc[task.columnId] = (acc[task.columnId] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>));
+        console.log('Task details:', result.map(t => ({ id: t.id, title: t.title, columnId: t.columnId, orderIndex: t.orderIndex })));
         return result
     }
 
@@ -298,6 +304,8 @@ export class TaskService {
             currentUserId = user.id;
         }
 
+        console.log('TaskService.updateTaskOrders called with:', taskOrders);
+
         // Update each task's order
         for (const taskOrder of taskOrders) {
             const updateData: {
@@ -313,11 +321,16 @@ export class TaskService {
                 updateData.column_id = taskOrder.columnId
             }
 
-            const { error } = await this.supabase
+            console.log(`Updating task ${taskOrder.id} with:`, updateData);
+
+            const { data, error } = await this.supabase
                 .from('tasks')
                 .update(updateData)
                 .eq('id', taskOrder.id)
                 .eq('user_id', currentUserId)
+                .select()
+
+            console.log(`Update result for task ${taskOrder.id}:`, { data, error });
 
             if (error) throw error
         }

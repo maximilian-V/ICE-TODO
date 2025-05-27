@@ -20,208 +20,118 @@ import { Badge } from '@/components/ui/badge'
 import Image from 'next/image'
 import { BlurFade } from '@/components/magicui/blur-fade'
 import { motion } from 'framer-motion'
-import { cn } from '@/lib/utils'
-
-// Elegant floating shape component for the hero section
-function FloatingShape({
-    className,
-    delay = 0,
-    width = 400,
-    height = 100,
-    rotate = 0,
-    gradient = "from-[#bae6fd]",
-}: {
-    className?: string;
-    delay?: number;
-    width?: number;
-    height?: number;
-    rotate?: number;
-    gradient?: string;
-}) {
-    return (
-        <motion.div
-            initial={{
-                opacity: 0,
-                y: -50,
-                rotate: rotate - 15,
-            }}
-            animate={{
-                opacity: 1,
-                y: 0,
-                rotate: rotate,
-            }}
-            transition={{
-                duration: 2.4,
-                delay,
-                ease: [0.23, 0.86, 0.39, 0.96],
-                opacity: { duration: 1.2 },
-            }}
-            className={cn("absolute", className)}
-        >
-            <motion.div
-                animate={{
-                    y: [0, 15, 0],
-                }}
-                transition={{
-                    duration: 12,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "easeInOut",
-                }}
-                style={{
-                    width,
-                    height,
-                }}
-                className="relative"
-            >
-                <div
-                    className={cn(
-                        "absolute inset-0 rounded-full",
-                        "bg-gradient-to-r to-transparent",
-                        gradient,
-                        "backdrop-blur-[2px] border border-[#e0f2fe]",
-                        "shadow-[0_8px_32px_0_rgba(186,230,253,0.2)]",
-                        "after:absolute after:inset-0 after:rounded-full",
-                        "after:bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.3),transparent_70%)]"
-                    )}
-                />
-            </motion.div>
-        </motion.div>
-    );
-}
 
 export function LandingPage() {
-    const fadeUpVariants = {
-        hidden: { opacity: 0, y: 30 },
-        visible: (i: number) => ({
-            opacity: 1,
-            y: 0,
-            transition: {
-                duration: 1,
-                delay: 0.2 + i * 0.15,
-                ease: [0.25, 0.4, 0.25, 1],
-            },
-        }),
-    };
-
     return (
         <div className="min-h-screen bg-gradient-to-b from-[#e6f7fa] via-[#f4fbfd] to-[#eaf6fb] text-[#1e3a5f] relative overflow-hidden">
-            {/* Enhanced Hero Section */}
-            <section className="relative py-20 md:py-32 px-6 min-h-[90vh] flex items-center">
-                <div className="absolute inset-0 overflow-hidden">
-                    {/* Decorative floating shapes */}
-                    <FloatingShape
-                        delay={0.3}
-                        width={600}
-                        height={140}
-                        rotate={12}
-                        gradient="from-[#7dd3fc]/30"
-                        className="left-[-10%] md:left-[-5%] top-[15%] md:top-[20%]"
+            {/* Enhanced Hero Section with Lamp Effect */}
+            <section className="relative z-0 flex min-h-[90vh] w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-[#e6f7fa] via-[#f4fbfd] to-[#eaf6fb]">
+                {/* Gradient Lamp Effect */}
+                <div className="absolute top-0 isolate z-0 flex w-screen flex-1 items-start justify-center">
+                    {/* Blur overlay */}
+                    <div className="absolute top-0 z-50 h-48 w-screen bg-transparent opacity-10 backdrop-blur-md" />
+
+                    {/* Main glow */}
+                    <div className="absolute inset-auto z-50 h-36 w-[28rem] -translate-y-[-30%] rounded-full bg-[#7dd3fc]/60 opacity-80 blur-3xl" />
+
+                    {/* Lamp effect */}
+                    <motion.div
+                        initial={{ width: "8rem" }}
+                        viewport={{ once: true }}
+                        transition={{ ease: "easeInOut", delay: 0.3, duration: 0.8 }}
+                        whileInView={{ width: "16rem" }}
+                        className="absolute top-0 z-30 h-36 -translate-y-[20%] rounded-full bg-[#bae6fd]/60 blur-2xl"
                     />
 
-                    <FloatingShape
-                        delay={0.5}
-                        width={500}
-                        height={120}
-                        rotate={-15}
-                        gradient="from-[#e0f2fe]/40"
-                        className="right-[-5%] md:right-[0%] top-[70%] md:top-[75%]"
+                    {/* Top line */}
+                    <motion.div
+                        initial={{ width: "15rem" }}
+                        viewport={{ once: true }}
+                        transition={{ ease: "easeInOut", delay: 0.3, duration: 0.8 }}
+                        whileInView={{ width: "30rem" }}
+                        className="absolute inset-auto z-50 h-0.5 -translate-y-[-10%] bg-[#0c4a6e]/60"
                     />
 
-                    <FloatingShape
-                        delay={0.4}
-                        width={300}
-                        height={80}
-                        rotate={-8}
-                        gradient="from-[#bae6fd]/30"
-                        className="left-[5%] md:left-[10%] bottom-[5%] md:bottom-[10%]"
-                    />
+                    {/* Left gradient cone */}
+                    <motion.div
+                        initial={{ opacity: 0.5, width: "15rem" }}
+                        whileInView={{ opacity: 1, width: "30rem" }}
+                        transition={{
+                            delay: 0.3,
+                            duration: 0.8,
+                            ease: "easeInOut",
+                        }}
+                        className="absolute inset-auto right-1/2 h-56 overflow-visible w-[30rem] bg-gradient-conic from-[#7dd3fc]/60 via-transparent to-transparent"
+                        style={{
+                            backgroundImage: `conic-gradient(from 70deg at center top, #7dd3fc60, transparent, transparent)`,
+                        }}
+                    >
+                        <div className="absolute w-[100%] left-0 bg-gradient-to-b from-[#e6f7fa] to-[#f4fbfd] h-40 bottom-0 z-20 [mask-image:linear-gradient(to_top,white,transparent)]" />
+                        <div className="absolute w-40 h-[100%] left-0 bg-gradient-to-r from-[#e6f7fa] to-transparent bottom-0 z-20 [mask-image:linear-gradient(to_right,white,transparent)]" />
+                    </motion.div>
 
-                    <FloatingShape
-                        delay={0.6}
-                        width={200}
-                        height={60}
-                        rotate={20}
-                        gradient="from-[#0c4a6e]/10"
-                        className="right-[15%] md:right-[20%] top-[10%] md:top-[15%]"
-                    />
-
-                    <FloatingShape
-                        delay={0.7}
-                        width={150}
-                        height={40}
-                        rotate={-25}
-                        gradient="from-[#7dd3fc]/20"
-                        className="left-[20%] md:left-[25%] top-[5%] md:top-[10%]"
-                    />
+                    {/* Right gradient cone */}
+                    <motion.div
+                        initial={{ opacity: 0.5, width: "15rem" }}
+                        whileInView={{ opacity: 1, width: "30rem" }}
+                        transition={{
+                            delay: 0.3,
+                            duration: 0.8,
+                            ease: "easeInOut",
+                        }}
+                        className="absolute inset-auto left-1/2 h-56 w-[30rem] bg-gradient-conic from-transparent via-transparent to-[#7dd3fc]/60"
+                        style={{
+                            backgroundImage: `conic-gradient(from 290deg at center top, transparent, transparent, #7dd3fc60)`,
+                        }}
+                    >
+                        <div className="absolute w-40 h-[100%] right-0 bg-gradient-to-l from-[#e6f7fa] to-transparent bottom-0 z-20 [mask-image:linear-gradient(to_left,white,transparent)]" />
+                        <div className="absolute w-[100%] right-0 bg-gradient-to-b from-[#e6f7fa] to-[#f4fbfd] h-40 bottom-0 z-20 [mask-image:linear-gradient(to_top,white,transparent)]" />
+                    </motion.div>
                 </div>
 
-                <div className="max-w-7xl mx-auto relative z-10">
-                    <div className="text-center max-w-4xl mx-auto">
-                        <motion.div
-                            custom={0}
-                            variants={fadeUpVariants}
-                            initial="hidden"
-                            animate="visible"
-                            className="flex justify-center"
-                        >
-                            <Badge variant="outline" className="animate-appear gap-2 mb-6 bg-[#e0f2fe] text-[#0c4a6e] border-[#bae6fd] px-4 py-1.5">
-                                <span className="text-[#0c4a6e]">Introducing ICE Framework</span>
-                                <Link href="/demo" className="flex items-center gap-1 text-[#0c4a6e] hover:text-[#0a3a5a]">
-                                    See it in action
-                                    <ChevronRight className="h-3 w-3" />
-                                </Link>
-                            </Badge>
-                        </motion.div>
+                {/* Content */}
+                <motion.div
+                    initial={{ y: 100, opacity: 0.5 }}
+                    viewport={{ once: true }}
+                    transition={{ ease: "easeInOut", delay: 0.3, duration: 0.8 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    className="relative z-50 container flex justify-center flex-1 flex-col px-5 md:px-10 gap-4 -translate-y-20"
+                >
+                    <div className="flex flex-col items-center text-center space-y-6">
+                        {/* Badge */}
+                        <Badge variant="outline" className="gap-2 bg-[#e0f2fe]/80 text-[#0c4a6e] border-[#bae6fd] px-4 py-1.5">
+                            <span className="text-[#0c4a6e]">Introducing ICE Framework</span>
+                            <Link href="/demo" className="flex items-center gap-1 text-[#0c4a6e] hover:text-[#0a3a5a]">
+                                See it in action
+                                <ChevronRight className="h-3 w-3" />
+                            </Link>
+                        </Badge>
 
-                        <motion.div
-                            custom={1}
-                            variants={fadeUpVariants}
-                            initial="hidden"
-                            animate="visible"
-                        >
-                            <h1 className="text-5xl md:text-7xl font-bold mb-4 tracking-tight">
-                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#0c4a6e] via-[#0a3a5a] to-[#0c4a6e]">
-                                    Smart Task Prioritization
-                                </span>
-                            </h1>
-                        </motion.div>
+                        {/* Title */}
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-r from-[#0c4a6e] via-[#0a3a5a] to-[#0c4a6e] bg-clip-text text-transparent">
+                            Smart Task Prioritization
+                        </h1>
 
-                        <motion.div
-                            custom={2}
-                            variants={fadeUpVariants}
-                            initial="hidden"
-                            animate="visible"
-                        >
-                            <h2 className="text-3xl md:text-4xl font-bold mb-8 leading-tight">
-                                with the
-                                <span className="bg-gradient-to-r from-[#0c4a6e] via-[#0a3a5a] to-[#0c4a6e] bg-clip-text text-transparent">
-                                    {" "}ICE Framework
-                                </span>
-                            </h2>
-                        </motion.div>
+                        {/* Subtitle */}
+                        <h2 className="text-2xl md:text-3xl font-semibold text-[#1e3a5f]">
+                            with the
+                            <span className="bg-gradient-to-r from-[#0c4a6e] via-[#0a3a5a] to-[#0c4a6e] bg-clip-text text-transparent">
+                                {" "}ICE Framework
+                            </span>
+                        </h2>
 
-                        <motion.div
-                            custom={3}
-                            variants={fadeUpVariants}
-                            initial="hidden"
-                            animate="visible"
-                        >
-                            <p className="text-md md:text-xl font-medium text-[#1e3a5f] max-w-2xl mx-auto mb-12">
-                                Organize your tasks using Impact, Confidence, and Ease scoring.
-                                Drag & drop kanban board with intelligent prioritization.
-                            </p>
-                        </motion.div>
+                        {/* Description */}
+                        <p className="text-lg md:text-xl text-[#1e3a5f] max-w-[600px] leading-relaxed">
+                            Organize your tasks using Impact, Confidence, and Ease scoring.
+                            Drag & drop kanban board with intelligent prioritization.
+                        </p>
 
-                        <motion.div
-                            custom={4}
-                            variants={fadeUpVariants}
-                            initial="hidden"
-                            animate="visible"
-                            className="flex justify-center gap-4"
-                        >
+                        {/* Actions */}
+                        <div className="flex gap-4 mt-8">
                             <Button size="lg" asChild className="bg-[#0c4a6e] hover:bg-[#0a3a5a] text-white">
                                 <Link href="/demo" className="flex items-center gap-2">
                                     Try Demo
+                                    <ArrowRight className="w-4 h-4" />
                                 </Link>
                             </Button>
                             <Button variant="outline" size="lg" asChild className="border-[#bae6fd] text-[#0c4a6e] hover:bg-[#e0f2fe]">
@@ -229,56 +139,52 @@ export function LandingPage() {
                                     Sign Up Free
                                 </Link>
                             </Button>
-                        </motion.div>
+                        </div>
 
-                        {/* App Preview with animation */}
-                        <motion.div
-                            custom={5}
-                            variants={fadeUpVariants}
-                            initial="hidden"
-                            animate="visible"
-                            className="relative pt-16 flex justify-center"
-                        >
+                        {/* App Preview */}
+                        <div className="relative pt-12 max-w-4xl">
                             <div className="relative">
-                                <div className="absolute -inset-1.5 bg-gradient-to-r from-[#7dd3fc]/30 to-[#e0f2fe]/30 rounded-xl blur-md"></div>
-                                <Image
-                                    src="/board.png"
-                                    alt="ICE Todo App Preview"
-                                    width={700}
-                                    height={400}
-                                    priority
-                                    className="rounded-xl shadow-lg bg-[#e0f2fe] border border-[#bae6fd] relative z-10"
-                                />
+                                <div className="absolute -inset-2 bg-gradient-to-r from-[#7dd3fc]/30 to-[#e0f2fe]/30 rounded-xl blur-lg"></div>
+                                <div className="relative bg-[#e0f2fe]/20 rounded-xl p-2 border border-[#bae6fd]/50">
+                                    <Image
+                                        src="/board.png"
+                                        alt="ICE Todo App Preview"
+                                        width={800}
+                                        height={500}
+                                        priority
+                                        className="rounded-lg shadow-2xl bg-white border border-[#bae6fd] relative z-10"
+                                    />
+                                </div>
 
                                 {/* Floating ICE indicators */}
                                 <motion.div
-                                    className="absolute -top-6 -right-6 bg-[#0c4a6e] text-white rounded-full px-4 py-2 font-bold shadow-lg z-20"
+                                    className="absolute -top-4 -right-4 bg-[#0c4a6e] text-white rounded-full px-4 py-2 font-bold shadow-lg z-20 text-sm"
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 2.2, duration: 0.8 }}
+                                    transition={{ delay: 1.2, duration: 0.8 }}
                                 >
                                     Impact
                                 </motion.div>
                                 <motion.div
-                                    className="absolute -bottom-6 -right-6 bg-[#7dd3fc] text-[#0c4a6e] rounded-full px-4 py-2 font-bold shadow-lg z-20"
+                                    className="absolute -bottom-4 -right-4 bg-[#7dd3fc] text-[#0c4a6e] rounded-full px-4 py-2 font-bold shadow-lg z-20 text-sm"
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 2.4, duration: 0.8 }}
+                                    transition={{ delay: 1.4, duration: 0.8 }}
                                 >
                                     Confidence
                                 </motion.div>
                                 <motion.div
-                                    className="absolute -bottom-6 -left-6 bg-[#e0f2fe] text-[#0c4a6e] rounded-full px-4 py-2 font-bold shadow-lg z-20"
+                                    className="absolute -bottom-4 -left-4 bg-[#e0f2fe] text-[#0c4a6e] rounded-full px-4 py-2 font-bold shadow-lg z-20 text-sm"
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 2.6, duration: 0.8 }}
+                                    transition={{ delay: 1.6, duration: 0.8 }}
                                 >
                                     Ease
                                 </motion.div>
                             </div>
-                        </motion.div>
+                        </div>
                     </div>
-                </div>
+                </motion.div>
             </section>
 
             {/* Features Section */}

@@ -3,13 +3,13 @@
 import { KanbanColumn } from '../components/KanbanColumn';
 import { TaskFormDialog } from '../components/TaskFormDialog';
 import { TaskCard } from '../components/TaskCard';
+import { DeleteTaskDialog } from '../components/DeleteTaskDialog';
 import { Navigation } from '../components/Navigation';
 import { Task, COLUMNS } from '@/app/types/kanban';
 import { useState } from 'react';
 import {
     DndContext,
     DragEndEvent,
-    DragOverEvent,
     DragStartEvent,
     DragOverlay,
     PointerSensor,
@@ -59,6 +59,8 @@ export default function DemoPage() {
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [newTaskColumnId, setNewTaskColumnId] = useState<string>('todo');
     const [activeTask, setActiveTask] = useState<Task | null>(null);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -79,51 +81,84 @@ export default function DemoPage() {
         setActiveTask(task || null);
     };
 
-    const handleDragOver = (event: DragOverEvent) => {
-        const { active, over } = event;
-        if (!over) return;
-
-        const activeId = active.id as string;
-        const overId = over.id as string;
-
-        const activeTask = tasks.find((t) => t.id === activeId);
-        if (!activeTask) return;
-
-        // Check if we're over a column
-        const overColumn = COLUMNS.find((col) => col.id === overId);
-        if (overColumn && activeTask.columnId !== overColumn.id) {
-            setTasks((tasks) =>
-                tasks.map((task) =>
-                    task.id === activeId
-                        ? { ...task, columnId: overColumn.id }
-                        : task
-                )
-            );
-        }
+    const handleDragOver = () => {
+        // We'll handle all the logic in handleDragEnd instead
+        // This function is kept for potential future visual feedback
     };
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
+        setActiveTask(null);
+
         if (!over) return;
 
         const activeId = active.id as string;
         const overId = over.id as string;
 
-        // Handle reordering within the same column
-        if (activeId !== overId) {
-            setTasks((tasks) => {
-                const activeIndex = tasks.findIndex((t) => t.id === activeId);
-                const overIndex = tasks.findIndex((t) => t.id === overId);
+        if (activeId === overId) return;
+
+        const activeTask = tasks.find((t) => t.id === activeId);
+        if (!activeTask) return;
+
+        const overColumn = COLUMNS.find((col) => col.id === overId);
+        const overTask = tasks.find((t) => t.id === overId);
+
+        if (overColumn) {
+            // Dropped on a column
+            if (activeTask.columnId !== overColumn.id) {
+                // Moving to different column
+                const tasksInTargetColumn = tasks.filter(t => t.columnId === overColumn.id);
+                const newOrderIndex = tasksInTargetColumn.length;
+
+                setTasks((tasks) =>
+                    tasks.map((task) =>
+                        task.id === activeId
+                            ? { ...task, columnId: overColumn.id, orderIndex: newOrderIndex }
+                            : task
+                    )
+                );
+            }
+        } else if (overTask) {
+            // Dropped on a task
+            const targetColumnId = overTask.columnId;
+
+            if (activeTask.columnId === targetColumnId) {
+                // Reordering within the same column
+                const tasksInColumn = tasks.filter(t => t.columnId === targetColumnId);
+                const activeIndex = tasksInColumn.findIndex(t => t.id === activeId);
+                const overIndex = tasksInColumn.findIndex(t => t.id === overId);
 
                 if (activeIndex !== -1 && overIndex !== -1) {
-                    return arrayMove(tasks, activeIndex, overIndex);
-                }
-                return tasks;
-            });
-        }
+                    const reorderedTasks = arrayMove(tasksInColumn, activeIndex, overIndex);
 
-        // Clear the active task
-        setActiveTask(null);
+                    setTasks((tasks) =>
+                        tasks.map((task) => {
+                            const reorderedTask = reorderedTasks.find(t => t.id === task.id);
+                            if (reorderedTask) {
+                                return {
+                                    ...task,
+                                    orderIndex: reorderedTasks.findIndex(t => t.id === task.id)
+                                };
+                            }
+                            return task;
+                        })
+                    );
+                }
+            } else {
+                // Moving to a different column
+                const tasksInTargetColumn = tasks.filter(t => t.columnId === targetColumnId);
+                const overIndex = tasksInTargetColumn.findIndex(t => t.id === overId);
+                const newOrderIndex = overIndex >= 0 ? overIndex : tasksInTargetColumn.length;
+
+                setTasks((tasks) =>
+                    tasks.map((task) =>
+                        task.id === activeId
+                            ? { ...task, columnId: targetColumnId, orderIndex: newOrderIndex }
+                            : task
+                    )
+                );
+            }
+        }
     };
 
     const handleAddTask = (columnId: string) => {
@@ -138,7 +173,18 @@ export default function DemoPage() {
     };
 
     const handleDeleteTask = (taskId: string) => {
-        setTasks((tasks) => tasks.filter((t) => t.id !== taskId));
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+            setTaskToDelete(task);
+            setDeleteDialogOpen(true);
+        }
+    };
+
+    const confirmDeleteTask = () => {
+        if (taskToDelete) {
+            setTasks((tasks) => tasks.filter((t) => t.id !== taskToDelete.id));
+            setTaskToDelete(null);
+        }
     };
 
     const handleToggleSubtask = (taskId: string, subtaskId: string) => {
@@ -239,6 +285,13 @@ export default function DemoPage() {
                         task={editingTask}
                         onSave={handleSaveTask}
                         columnId={newTaskColumnId}
+                    />
+
+                    <DeleteTaskDialog
+                        open={deleteDialogOpen}
+                        onOpenChange={setDeleteDialogOpen}
+                        task={taskToDelete}
+                        onConfirm={confirmDeleteTask}
                     />
                 </main>
             </div>

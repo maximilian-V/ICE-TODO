@@ -5,7 +5,6 @@ import { TaskService } from '@/lib/services/tasks';
 import {
     DndContext,
     DragEndEvent,
-    DragOverEvent,
     DragStartEvent,
     DragOverlay,
     PointerSensor,
@@ -20,6 +19,7 @@ import { Task, COLUMNS } from '@/app/types/kanban';
 import { KanbanColumn } from './KanbanColumn';
 import { TaskFormDialog } from './TaskFormDialog';
 import { TaskCard } from './TaskCard';
+import { DeleteTaskDialog } from './DeleteTaskDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from './AuthProvider';
@@ -32,6 +32,8 @@ export function KanbanBoard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [activeTask, setActiveTask] = useState<Task | null>(null);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
     const { user, signOut } = useAuth();
     const taskService = new TaskService();
@@ -79,46 +81,9 @@ export function KanbanBoard() {
         setActiveTask(task || null);
     };
 
-    const handleDragOver = (event: DragOverEvent) => {
-        const { active, over } = event;
-        if (!over || !user) return;
-
-        const activeId = active.id as string;
-        const overId = over.id as string;
-
-        const activeTask = tasks.find((t) => t.id === activeId);
-        if (!activeTask) return;
-
-        // Check if we're over a column (not a task)
-        const overColumn = COLUMNS.find((col) => col.id === overId);
-        const overTask = tasks.find((t) => t.id === overId);
-
-        if (overColumn && activeTask.columnId !== overColumn.id) {
-            // Moving to a different column
-            const tasksInTargetColumn = tasks.filter(t => t.columnId === overColumn.id);
-            const newOrderIndex = tasksInTargetColumn.length;
-
-            setTasks((tasks) =>
-                tasks.map((task) =>
-                    task.id === activeId
-                        ? { ...task, columnId: overColumn.id, orderIndex: newOrderIndex }
-                        : task
-                )
-            );
-        } else if (overTask && overTask.columnId !== activeTask.columnId) {
-            // Moving to a different column by hovering over a task
-            const tasksInTargetColumn = tasks.filter(t => t.columnId === overTask.columnId && t.id !== activeId);
-            const overTaskIndex = tasksInTargetColumn.findIndex(t => t.id === overTask.id);
-            const newOrderIndex = overTaskIndex >= 0 ? overTaskIndex : tasksInTargetColumn.length;
-
-            setTasks((tasks) =>
-                tasks.map((task) =>
-                    task.id === activeId
-                        ? { ...task, columnId: overTask.columnId, orderIndex: newOrderIndex }
-                        : task
-                )
-            );
-        }
+    const handleDragOver = () => {
+        // We'll handle all the logic in handleDragEnd instead
+        // This function is kept for potential future visual feedback
     };
 
     const handleDragEnd = async (event: DragEndEvent) => {
@@ -130,13 +95,33 @@ export function KanbanBoard() {
         const activeId = active.id as string;
         const overId = over.id as string;
 
+        console.log('Drag end:', { activeId, overId });
+
         if (activeId === overId) return;
 
         const activeTask = tasks.find((t) => t.id === activeId);
         if (!activeTask) return;
 
+        // Use the original task state for comparison (in case local state was modified during drag)
+        const originalColumnId = activeTask.columnId;
+
         const overColumn = COLUMNS.find((col) => col.id === overId);
         const overTask = tasks.find((t) => t.id === overId);
+
+        console.log('Drag end details:', {
+            activeTask: { id: activeTask.id, title: activeTask.title, columnId: activeTask.columnId },
+            overColumn: overColumn?.id,
+            overTask: overTask ? { id: overTask.id, title: overTask.title, columnId: overTask.columnId } : null
+        });
+
+        // Get the original task state from the database perspective (not the potentially modified local state)
+        const originalActiveTask = tasks.find((t) => t.id === activeId);
+        console.log('Original active task state:', originalActiveTask ? {
+            id: originalActiveTask.id,
+            title: originalActiveTask.title,
+            columnId: originalActiveTask.columnId,
+            orderIndex: originalActiveTask.orderIndex
+        } : null);
 
         try {
             let updatedTasks = [...tasks];
@@ -144,10 +129,17 @@ export function KanbanBoard() {
 
             if (overColumn) {
                 // Dropped on a column
-                if (activeTask.columnId !== overColumn.id) {
+                console.log('Dropped on column:', overColumn.id);
+                if (originalColumnId !== overColumn.id) {
                     // Moving to different column
                     const tasksInTargetColumn = tasks.filter(t => t.columnId === overColumn.id);
                     const newOrderIndex = tasksInTargetColumn.length;
+
+                    console.log('Moving to different column:', {
+                        from: originalColumnId,
+                        to: overColumn.id,
+                        newOrderIndex
+                    });
 
                     updatedTasks = tasks.map(task =>
                         task.id === activeId
@@ -164,34 +156,67 @@ export function KanbanBoard() {
             } else if (overTask) {
                 // Dropped on a task
                 const targetColumnId = overTask.columnId;
-                const tasksInColumn = tasks.filter(t => t.columnId === targetColumnId);
-                const activeIndex = tasksInColumn.findIndex(t => t.id === activeId);
-                const overIndex = tasksInColumn.findIndex(t => t.id === overId);
 
-                if (activeIndex !== -1 && overIndex !== -1) {
-                    // Reorder within the same column or move to different column
-                    const reorderedTasks = arrayMove(tasksInColumn, activeIndex, overIndex);
+                if (originalColumnId === targetColumnId) {
+                    // Reordering within the same column
+                    const tasksInColumn = tasks.filter(t => t.columnId === targetColumnId);
+                    const activeIndex = tasksInColumn.findIndex(t => t.id === activeId);
+                    const overIndex = tasksInColumn.findIndex(t => t.id === overId);
 
-                    // Update order indices
-                    reorderedTasks.forEach((task, index) => {
-                        tasksToUpdate.push({
-                            id: task.id,
-                            orderIndex: index,
-                            columnId: targetColumnId !== activeTask.columnId ? targetColumnId : undefined
+                    if (activeIndex !== -1 && overIndex !== -1) {
+                        const reorderedTasks = arrayMove(tasksInColumn, activeIndex, overIndex);
+
+                        // Update order indices for all tasks in this column
+                        reorderedTasks.forEach((task, index) => {
+                            tasksToUpdate.push({
+                                id: task.id,
+                                orderIndex: index
+                            });
                         });
+
+                        // Update local state
+                        updatedTasks = tasks.map(task => {
+                            const reorderedTask = reorderedTasks.find(t => t.id === task.id);
+                            if (reorderedTask) {
+                                return {
+                                    ...task,
+                                    orderIndex: reorderedTasks.findIndex(t => t.id === task.id)
+                                };
+                            }
+                            return task;
+                        });
+                    }
+                } else {
+                    // Moving to a different column - insert at the position of the overTask
+                    const tasksInTargetColumn = tasks.filter(t => t.columnId === targetColumnId);
+                    const overIndex = tasksInTargetColumn.findIndex(t => t.id === overId);
+                    const newOrderIndex = overIndex >= 0 ? overIndex : tasksInTargetColumn.length;
+
+                    // Update the moved task
+                    updatedTasks = tasks.map(task =>
+                        task.id === activeId
+                            ? { ...task, columnId: targetColumnId, orderIndex: newOrderIndex }
+                            : task
+                    );
+
+                    // Add the moved task to updates
+                    tasksToUpdate.push({
+                        id: activeId,
+                        orderIndex: newOrderIndex,
+                        columnId: targetColumnId
                     });
 
-                    // Update local state
-                    updatedTasks = tasks.map(task => {
-                        const updatedTask = reorderedTasks.find(t => t.id === task.id);
-                        if (updatedTask) {
-                            return {
-                                ...task,
-                                orderIndex: reorderedTasks.findIndex(t => t.id === task.id),
-                                columnId: targetColumnId
-                            };
+                    // Reorder other tasks in the target column that come after the insertion point
+                    tasksInTargetColumn.forEach((task, index) => {
+                        if (index >= newOrderIndex) {
+                            tasksToUpdate.push({
+                                id: task.id,
+                                orderIndex: index + 1
+                            });
+                            updatedTasks = updatedTasks.map(t =>
+                                t.id === task.id ? { ...t, orderIndex: index + 1 } : t
+                            );
                         }
-                        return task;
                     });
                 }
             }
@@ -201,8 +226,13 @@ export function KanbanBoard() {
 
             // Update database
             if (tasksToUpdate.length > 0) {
+                console.log('About to update database with:', tasksToUpdate);
                 await taskService.updateTaskOrders(tasksToUpdate, user.id);
-                console.log('Task orders updated:', tasksToUpdate);
+                console.log('Task orders updated successfully');
+
+                // Verify the update by checking the local state
+                const updatedTask = updatedTasks.find(t => t.id === activeId);
+                console.log('Updated task in local state:', updatedTask);
             }
 
         } catch (error) {
@@ -225,16 +255,26 @@ export function KanbanBoard() {
         setIsDialogOpen(true);
     };
 
-    const handleDeleteTask = async (taskId: string) => {
-        if (!user) return;
+    const handleDeleteTask = (taskId: string) => {
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+            setTaskToDelete(task);
+            setDeleteDialogOpen(true);
+        }
+    };
+
+    const confirmDeleteTask = async () => {
+        if (!user || !taskToDelete) return;
 
         try {
-            await taskService.deleteTask(taskId, user.id);
-            setTasks((tasks) => tasks.filter((t) => t.id !== taskId));
-            console.log('Task deleted:', taskId);
+            await taskService.deleteTask(taskToDelete.id, user.id);
+            setTasks((tasks) => tasks.filter((t) => t.id !== taskToDelete.id));
+            console.log('Task deleted:', taskToDelete.id);
         } catch (error) {
             console.error('Error deleting task:', error);
             setError('Failed to delete task');
+        } finally {
+            setTaskToDelete(null);
         }
     };
 
@@ -424,6 +464,13 @@ export function KanbanBoard() {
                 task={editingTask}
                 onSave={handleSaveTask}
                 columnId={newTaskColumnId}
+            />
+
+            <DeleteTaskDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                task={taskToDelete}
+                onConfirm={confirmDeleteTask}
             />
         </>
     );
