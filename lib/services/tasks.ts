@@ -19,6 +19,7 @@ export class TaskService {
             ease: taskRow.ease,
             iceScore: taskRow.ice_score,
             columnId: taskRow.column_id,
+            orderIndex: taskRow.order_index,
             subtasks: subtasks.map(this.mapSubtaskFromDB),
             createdAt: new Date(taskRow.created_at),
             updatedAt: new Date(taskRow.updated_at),
@@ -67,7 +68,7 @@ export class TaskService {
             .from('tasks')
             .select('*')
             .eq('user_id', currentUserId)
-            .order('created_at', { ascending: false })
+            .order('order_index', { ascending: true })
 
         console.log('Tasks query result:', { tasks, tasksError })
 
@@ -108,6 +109,18 @@ export class TaskService {
             currentUserId = user.id;
         }
 
+        // Get the highest order index for this column and user
+        const { data: maxOrderTask } = await this.supabase
+            .from('tasks')
+            .select('order_index')
+            .eq('user_id', currentUserId)
+            .eq('column_id', task.columnId)
+            .order('order_index', { ascending: false })
+            .limit(1)
+            .single()
+
+        const nextOrderIndex = maxOrderTask ? maxOrderTask.order_index + 1 : 0
+
         const { data: newTask, error: taskError } = await this.supabase
             .from('tasks')
             .insert({
@@ -119,6 +132,7 @@ export class TaskService {
                 ease: task.ease,
                 ice_score: task.iceScore,
                 column_id: task.columnId,
+                order_index: task.orderIndex ?? nextOrderIndex,
             })
             .select()
             .single()
@@ -169,6 +183,7 @@ export class TaskService {
                 ...(updates.ease && { ease: updates.ease }),
                 ...(updates.iceScore && { ice_score: updates.iceScore }),
                 ...(updates.columnId && { column_id: updates.columnId }),
+                ...(updates.orderIndex !== undefined && { order_index: updates.orderIndex }),
                 updated_at: new Date().toISOString(),
             })
             .eq('id', taskId)
@@ -272,5 +287,39 @@ export class TaskService {
             .update({ updated_at: new Date().toISOString() })
             .eq('id', taskId)
             .eq('user_id', currentUserId)
+    }
+
+    // Update task orders in bulk
+    async updateTaskOrders(taskOrders: { id: string; orderIndex: number; columnId?: string }[], userId?: string): Promise<void> {
+        let currentUserId = userId;
+        if (!currentUserId) {
+            const { data: { user } } = await this.supabase.auth.getUser()
+            if (!user) throw new Error('User not authenticated')
+            currentUserId = user.id;
+        }
+
+        // Update each task's order
+        for (const taskOrder of taskOrders) {
+            const updateData: {
+                order_index: number;
+                updated_at: string;
+                column_id?: string;
+            } = {
+                order_index: taskOrder.orderIndex,
+                updated_at: new Date().toISOString(),
+            }
+
+            if (taskOrder.columnId) {
+                updateData.column_id = taskOrder.columnId
+            }
+
+            const { error } = await this.supabase
+                .from('tasks')
+                .update(updateData)
+                .eq('id', taskOrder.id)
+                .eq('user_id', currentUserId)
+
+            if (error) throw error
+        }
     }
 } 

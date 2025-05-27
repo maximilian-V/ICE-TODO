@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS public.tasks (
     ease INTEGER NOT NULL CHECK (ease >= 1 AND ease <= 10),
     ice_score INTEGER NOT NULL,
     column_id TEXT NOT NULL CHECK (column_id IN ('todo', 'inprogress', 'done')),
+    order_index INTEGER DEFAULT 0 NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
@@ -81,6 +82,7 @@ CREATE POLICY "Users can delete subtasks of their tasks" ON public.subtasks
 CREATE INDEX IF NOT EXISTS idx_tasks_user_id ON public.tasks(user_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_column_id ON public.tasks(column_id);
 CREATE INDEX IF NOT EXISTS idx_tasks_created_at ON public.tasks(created_at);
+CREATE INDEX IF NOT EXISTS idx_tasks_order ON public.tasks(column_id, order_index);
 CREATE INDEX IF NOT EXISTS idx_subtasks_task_id ON public.subtasks(task_id);
 
 -- Create function to automatically update updated_at timestamp

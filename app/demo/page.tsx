@@ -32,6 +32,7 @@ export default function DemoPage() {
             ease: 6,
             iceScore: 336,
             columnId: 'todo',
+            orderIndex: 0,
             subtasks: [],
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -45,6 +46,7 @@ export default function DemoPage() {
             ease: 9,
             iceScore: 360,
             columnId: 'inprogress',
+            orderIndex: 0,
             subtasks: [
                 { id: 'st1', title: 'Subtask 1', completed: false, taskId: '2' },
                 { id: 'st2', title: 'Subtask 2', completed: true, taskId: '2' },
@@ -165,6 +167,10 @@ export default function DemoPage() {
             );
         } else {
             // Create new task
+            const targetColumnId = taskData.columnId || newTaskColumnId;
+            const tasksInColumn = tasks.filter(t => t.columnId === targetColumnId);
+            const newOrderIndex = tasksInColumn.length;
+
             const newTask: Task = {
                 id: Date.now().toString(),
                 title: taskData.title!,
@@ -173,12 +179,13 @@ export default function DemoPage() {
                 confidence: taskData.confidence!,
                 ease: taskData.ease!,
                 iceScore: taskData.iceScore!,
-                columnId: taskData.columnId!,
+                columnId: targetColumnId,
+                orderIndex: newOrderIndex,
                 subtasks: taskData.subtasks || [],
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };
-            setTasks((tasks) => [newTask, ...tasks]);
+            setTasks((tasks) => [...tasks, newTask]);
         }
         setIsDialogOpen(false);
     };

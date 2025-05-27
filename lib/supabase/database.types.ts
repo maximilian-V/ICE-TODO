@@ -20,6 +20,7 @@ export interface Database {
                     ease: number
                     ice_score: number
                     column_id: string
+                    order_index: number
                     created_at: string
                     updated_at: string
                 }
@@ -33,6 +34,7 @@ export interface Database {
                     ease: number
                     ice_score: number
                     column_id: string
+                    order_index?: number
                     created_at?: string
                     updated_at?: string
                 }
@@ -46,6 +48,7 @@ export interface Database {
                     ease?: number
                     ice_score?: number
                     column_id?: string
+                    order_index?: number
                     created_at?: string
                     updated_at?: string
                 }

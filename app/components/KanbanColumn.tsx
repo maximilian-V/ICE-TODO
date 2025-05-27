@@ -32,8 +32,8 @@ export function KanbanColumn({
         id: column.id,
     });
 
-    // Sort tasks by ICE score (highest first)
-    const sortedTasks = [...tasks].sort((a, b) => b.iceScore - a.iceScore);
+    // Sort tasks by order index (lowest first)
+    const sortedTasks = [...tasks].sort((a, b) => a.orderIndex - b.orderIndex);
     const taskIds = sortedTasks.map((task) => task.id);
 
     return (

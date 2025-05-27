@@ -14,6 +14,7 @@ export interface Task {
     ease: number; // 1-10
     iceScore: number; // Impact * Confidence * Ease
     columnId: string;
+    orderIndex: number;
     subtasks: Subtask[];
     createdAt: Date;
     updatedAt: Date;
