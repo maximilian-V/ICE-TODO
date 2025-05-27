@@ -32,7 +32,7 @@ export function Navigation() {
                                 </Link>
                             </Button>
                             <Button variant="ghost" asChild>
-                                <Link href="/no-auth-test">Demo</Link>
+                                <Link href="/demo">Demo</Link>
                             </Button>
                         </div>
                     </div>

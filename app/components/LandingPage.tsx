@@ -23,7 +23,7 @@ export function LandingPage() {
                             <Link href="/auth/signup">Get Started Free</Link>
                         </Button>
                         <Button size="lg" variant="outline" asChild>
-                            <Link href="/no-auth-test">Try Demo</Link>
+                            <Link href="/demo">Try Demo</Link>
                         </Button>
                     </div>
                 </div>

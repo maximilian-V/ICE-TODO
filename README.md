@@ -162,7 +162,7 @@ ice-todo/
 │   │   └── LandingPage.tsx    # Landing page for unauthenticated users
 │   ├── types/
 │   │   └── kanban.ts          # TypeScript interfaces
-│   ├── no-auth-test/          # Demo page without authentication
+│   ├── demo/                  # Demo page without authentication
 │   ├── page.tsx               # Main page with auth routing
 │   ├── layout.tsx             # Root layout
 │   └── globals.css            # Global styles
@@ -177,7 +177,7 @@ ice-todo/
 
 ## Demo
 
-Try the demo version without authentication at `/no-auth-test` to see how the kanban board works before signing up.
+Try the demo version without authentication at `/demo` to see how the kanban board works before signing up.
 
 ## Contributing
 

@@ -48,22 +48,8 @@ const nextConfig: NextConfig = {
       },
     ]
   },
-  // Remove debug pages in production
+  // No redirects needed since test pages have been removed
   async redirects() {
-    if (process.env.NODE_ENV === 'production') {
-      return [
-        {
-          source: '/debug/:path*',
-          destination: '/',
-          permanent: false,
-        },
-        {
-          source: '/test-:path*',
-          destination: '/',
-          permanent: false,
-        },
-      ]
-    }
     return []
   },
 };

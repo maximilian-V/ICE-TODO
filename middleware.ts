@@ -17,13 +17,6 @@ export async function middleware(request: NextRequest) {
     // Update session and get response
     const response = await updateSession(request)
 
-    // In production, block access to debug and test pages
-    if (process.env.NODE_ENV === 'production') {
-        if (pathname.startsWith('/debug') || pathname.startsWith('/test-')) {
-            return NextResponse.redirect(new URL('/', request.url))
-        }
-    }
-
     // For now, allow all routes since we're using client-side auth
     // In a more secure setup, you would check authentication here
     return response

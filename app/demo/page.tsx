@@ -6,7 +6,7 @@ import { Navigation } from '../components/Navigation';
 import { Task, COLUMNS } from '@/app/types/kanban';
 import { useState } from 'react';
 
-export default function NoAuthTestPage() {
+export default function DemoPage() {
     const [tasks, setTasks] = useState<Task[]>([
         {
             id: '1',
@@ -110,9 +110,9 @@ export default function NoAuthTestPage() {
             <Navigation />
             <div className="container mx-auto p-6">
                 <header className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">ICE Score Kanban Board (Demo)</h1>
+                    <h1 className="text-3xl font-bold text-gray-900">ICE Score Kanban Board - Demo</h1>
                     <p className="text-gray-600 mt-2">
-                        Testing the kanban board without authentication - data is not saved
+                        Try out the kanban board functionality without creating an account - changes are not saved
                     </p>
                 </header>
                 <main className="h-[calc(100vh-200px)]">
