@@ -120,3 +120,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Drag and drop overlay styles */
+@layer components {
+  .drag-overlay {
+    @apply pointer-events-none;
+    z-index: 9999;
+  }
+}

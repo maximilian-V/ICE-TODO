@@ -214,7 +214,7 @@ export default function DemoPage() {
                                 />
                             ))}
                         </div>
-                        <DragOverlay>
+                        <DragOverlay className="drag-overlay">
                             {activeTask ? (
                                 <TaskCard
                                     task={activeTask}

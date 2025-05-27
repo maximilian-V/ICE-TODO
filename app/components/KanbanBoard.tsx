@@ -335,7 +335,7 @@ export function KanbanBoard() {
                         />
                     ))}
                 </div>
-                <DragOverlay>
+                <DragOverlay className="drag-overlay">
                     {activeTask ? (
                         <TaskCard
                             task={activeTask}
