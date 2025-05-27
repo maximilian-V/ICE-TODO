@@ -29,7 +29,7 @@ export default function LoginPage() {
             if (error) {
                 setError(error.message)
             } else {
-                // Use window.location for a full page redirect
+                // Use window.location for a full page redirect to ensure auth context updates
                 window.location.href = '/'
             }
         } catch {
