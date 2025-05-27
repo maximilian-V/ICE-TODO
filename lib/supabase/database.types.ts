@@ -9,6 +9,38 @@ export type Json =
 export interface Database {
     public: {
         Tables: {
+            columns: {
+                Row: {
+                    id: string
+                    user_id: string
+                    column_id: string
+                    title: string
+                    order_index: number
+                    color: string
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    column_id: string
+                    title: string
+                    order_index?: number
+                    color?: string
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    column_id?: string
+                    title?: string
+                    order_index?: number
+                    color?: string
+                    created_at?: string
+                    updated_at?: string
+                }
+            }
             tasks: {
                 Row: {
                     id: string

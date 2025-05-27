@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { TaskService } from '@/lib/services/tasks';
+import { ColumnService } from '@/lib/services/columns';
 import {
     DndContext,
     DragEndEvent,
@@ -15,17 +16,19 @@ import {
 import {
     arrayMove,
 } from '@dnd-kit/sortable';
-import { Task, COLUMNS } from '@/app/types/kanban';
+import { Task, Column, DEFAULT_COLUMNS } from '@/app/types/kanban';
 import { KanbanColumn } from './KanbanColumn';
 import { TaskFormDialog } from './TaskFormDialog';
 import { TaskCard } from './TaskCard';
 import { DeleteTaskDialog } from './DeleteTaskDialog';
+import { RenameColumnDialog } from './RenameColumnDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from './AuthProvider';
 
 export function KanbanBoard() {
     const [tasks, setTasks] = useState<Task[]>([]);
+    const [columns, setColumns] = useState<Column[]>(DEFAULT_COLUMNS);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [newTaskColumnId, setNewTaskColumnId] = useState<string>('todo');
@@ -34,9 +37,12 @@ export function KanbanBoard() {
     const [activeTask, setActiveTask] = useState<Task | null>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+    const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+    const [columnToRename, setColumnToRename] = useState<Column | null>(null);
 
     const { user, signOut } = useAuth();
     const taskService = new TaskService();
+    const columnService = new ColumnService();
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -46,11 +52,12 @@ export function KanbanBoard() {
         })
     );
 
-    // Load tasks when user changes
+    // Load tasks and columns when user changes
     useEffect(() => {
-        const loadTasks = async () => {
+        const loadData = async () => {
             if (!user) {
                 setTasks([]);
+                setColumns(DEFAULT_COLUMNS);
                 setLoading(false);
                 return;
             }
@@ -58,20 +65,26 @@ export function KanbanBoard() {
             try {
                 setLoading(true);
                 setError(null);
-                console.log('Loading tasks for user:', user.email);
+                console.log('Loading data for user:', user.email);
 
-                const userTasks = await taskService.getTasks(user.id);
+                // Load columns and tasks in parallel
+                const [userColumns, userTasks] = await Promise.all([
+                    columnService.getColumns(user.id),
+                    taskService.getTasks(user.id)
+                ]);
+
+                setColumns(userColumns);
                 setTasks(userTasks);
-                console.log('Loaded tasks:', userTasks.length);
+                console.log('Loaded columns:', userColumns.length, 'tasks:', userTasks.length);
             } catch (error) {
-                console.error('Error loading tasks:', error);
-                setError('Failed to load tasks');
+                console.error('Error loading data:', error);
+                setError('Failed to load data');
             } finally {
                 setLoading(false);
             }
         };
 
-        loadTasks();
+        loadData();
     }, [user]);
 
     const handleDragStart = (event: DragStartEvent) => {
@@ -105,7 +118,7 @@ export function KanbanBoard() {
         // Use the original task state for comparison (in case local state was modified during drag)
         const originalColumnId = activeTask.columnId;
 
-        const overColumn = COLUMNS.find((col) => col.id === overId);
+        const overColumn = columns.find((col) => col.id === overId);
         const overTask = tasks.find((t) => t.id === overId);
 
         console.log('Drag end details:', {
@@ -278,6 +291,31 @@ export function KanbanBoard() {
         }
     };
 
+    const handleRenameColumn = (column: Column) => {
+        setColumnToRename(column);
+        setRenameDialogOpen(true);
+    };
+
+    const confirmRenameColumn = async (columnId: string, newTitle: string) => {
+        if (!user) return;
+
+        try {
+            const updatedColumn = await columnService.updateColumn(columnId, { title: newTitle }, user.id);
+            setColumns((columns) =>
+                columns.map((col) =>
+                    col.id === columnId ? updatedColumn : col
+                )
+            );
+            console.log('Column renamed:', columnId, 'to:', newTitle);
+        } catch (error) {
+            console.error('Error renaming column:', error);
+            setError('Failed to rename column');
+            throw error; // Re-throw to let the dialog handle the error
+        } finally {
+            setColumnToRename(null);
+        }
+    };
+
     const handleToggleSubtask = async (taskId: string, subtaskId: string) => {
         if (!user) return;
 
@@ -434,7 +472,7 @@ export function KanbanBoard() {
                 onDragEnd={handleDragEnd}
             >
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
-                    {COLUMNS.map((column) => (
+                    {columns.map((column) => (
                         <KanbanColumn
                             key={column.id}
                             column={column}
@@ -443,6 +481,7 @@ export function KanbanBoard() {
                             onEditTask={handleEditTask}
                             onDeleteTask={handleDeleteTask}
                             onToggleSubtask={handleToggleSubtask}
+                            onRenameColumn={handleRenameColumn}
                         />
                     ))}
                 </div>
@@ -471,6 +510,13 @@ export function KanbanBoard() {
                 onOpenChange={setDeleteDialogOpen}
                 task={taskToDelete}
                 onConfirm={confirmDeleteTask}
+            />
+
+            <RenameColumnDialog
+                open={renameDialogOpen}
+                onOpenChange={setRenameDialogOpen}
+                column={columnToRename}
+                onConfirm={confirmRenameColumn}
             />
         </>
     );

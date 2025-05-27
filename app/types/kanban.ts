@@ -24,12 +24,14 @@ export interface Column {
     id: string;
     title: string;
     order: number;
+    color?: string;
+    isCustom?: boolean;
 }
 
-export type ColumnId = 'todo' | 'inprogress' | 'done';
+export type ColumnId = 'todo' | 'inprogress' | 'done' | string;
 
-export const COLUMNS: Column[] = [
-    { id: 'todo', title: 'To Do', order: 0 },
-    { id: 'inprogress', title: 'In Progress', order: 1 },
-    { id: 'done', title: 'Done', order: 2 },
+export const DEFAULT_COLUMNS: Column[] = [
+    { id: 'todo', title: 'To Do', order: 0, color: '#6b7280' },
+    { id: 'inprogress', title: 'In Progress', order: 1, color: '#6b7280' },
+    { id: 'done', title: 'Done', order: 2, color: '#6b7280' },
 ]; 

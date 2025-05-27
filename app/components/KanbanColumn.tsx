@@ -2,7 +2,13 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '../../components/ui/dropdown-menu';
+import { Plus, MoreHorizontal, Edit } from 'lucide-react';
 import { Task, Column } from '@/app/types/kanban';
 import { TaskCard } from './TaskCard';
 import { useDroppable } from '@dnd-kit/core';
@@ -18,6 +24,7 @@ interface KanbanColumnProps {
     onEditTask: (task: Task) => void;
     onDeleteTask: (taskId: string) => void;
     onToggleSubtask: (taskId: string, subtaskId: string) => void;
+    onRenameColumn?: (column: Column) => void;
 }
 
 export function KanbanColumn({
@@ -27,6 +34,7 @@ export function KanbanColumn({
     onEditTask,
     onDeleteTask,
     onToggleSubtask,
+    onRenameColumn,
 }: KanbanColumnProps) {
     const { setNodeRef } = useDroppable({
         id: column.id,
@@ -46,14 +54,35 @@ export function KanbanColumn({
                             ({sortedTasks.length})
                         </span>
                     </CardTitle>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => onAddTask(column.id)}
-                    >
-                        <Plus className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => onAddTask(column.id)}
+                        >
+                            <Plus className="h-4 w-4" />
+                        </Button>
+                        {onRenameColumn && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8"
+                                    >
+                                        <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => onRenameColumn(column)}>
+                                        <Edit className="mr-2 h-4 w-4" />
+                                        Rename Column
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
+                    </div>
                 </div>
             </CardHeader>
             <CardContent

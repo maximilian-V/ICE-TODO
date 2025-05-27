@@ -5,7 +5,7 @@ import { TaskFormDialog } from '../components/TaskFormDialog';
 import { TaskCard } from '../components/TaskCard';
 import { DeleteTaskDialog } from '../components/DeleteTaskDialog';
 import { Navigation } from '../components/Navigation';
-import { Task, COLUMNS } from '@/app/types/kanban';
+import { Task, DEFAULT_COLUMNS } from '@/app/types/kanban';
 import { useState } from 'react';
 import {
     DndContext,
@@ -100,7 +100,7 @@ export default function DemoPage() {
         const activeTask = tasks.find((t) => t.id === activeId);
         if (!activeTask) return;
 
-        const overColumn = COLUMNS.find((col) => col.id === overId);
+        const overColumn = DEFAULT_COLUMNS.find((col) => col.id === overId);
         const overTask = tasks.find((t) => t.id === overId);
 
         if (overColumn) {
@@ -255,7 +255,7 @@ export default function DemoPage() {
                         onDragEnd={handleDragEnd}
                     >
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
-                            {COLUMNS.map((column) => (
+                            {DEFAULT_COLUMNS.map((column) => (
                                 <KanbanColumn
                                     key={column.id}
                                     column={column}
